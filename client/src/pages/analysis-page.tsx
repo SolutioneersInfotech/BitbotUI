@@ -138,7 +138,7 @@ export default function AnalysisPage() {
           <div className="lg:col-span-2">
             <TradingChart />
           </div>
-          
+
           <div className="space-y-6">
             {/* Technical Indicators */}
             <Card className="bg-trading-card border-gray-700">
@@ -156,7 +156,7 @@ export default function AnalysisPage() {
                       <div className="text-xs text-gray-500">Neutral</div>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center justify-between">
                     <span className="text-gray-400">MACD</span>
                     <div className="text-right">
@@ -166,7 +166,7 @@ export default function AnalysisPage() {
                       <div className="text-xs text-trading-success">Bullish</div>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center justify-between">
                     <span className="text-gray-400">SMA (50)</span>
                     <div className="text-right">
@@ -176,7 +176,7 @@ export default function AnalysisPage() {
                       <div className="text-xs text-gray-500">Support</div>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center justify-between">
                     <span className="text-gray-400">EMA (20)</span>
                     <div className="text-right">
@@ -192,55 +192,52 @@ export default function AnalysisPage() {
 
             {/* Trading Signal */}
             {indicators?.signal && (
-              <Card className={`border ${
-                indicators.signal === 'BUY' 
-                  ? 'bg-trading-success bg-opacity-20 border-trading-success' 
+              <Card className={`border ${indicators.signal === 'BUY'
+                  ? 'bg-trading-success bg-opacity-20 border-trading-success'
                   : indicators.signal === 'SELL'
-                  ? 'bg-trading-danger bg-opacity-20 border-trading-danger'
-                  : 'bg-trading-warning bg-opacity-20 border-trading-warning'
-              }`}>
+                    ? 'bg-trading-danger bg-opacity-20 border-trading-danger'
+                    : 'bg-trading-warning bg-opacity-20 border-trading-warning'
+                }`}>
                 <CardContent className="pt-6">
                   <div className="flex items-center justify-between mb-4">
-                    <Badge 
-                      className={`${
-                        indicators.signal === 'BUY' 
-                          ? 'bg-trading-success' 
+                    <Badge
+                      className={`${indicators.signal === 'BUY'
+                          ? 'bg-trading-success'
                           : indicators.signal === 'SELL'
-                          ? 'bg-trading-danger'
-                          : 'bg-trading-warning'
-                      } text-white`}
+                            ? 'bg-trading-danger'
+                            : 'bg-trading-warning'
+                        } text-white`}
                       data-testid="trading-signal-badge"
                     >
                       {indicators.signal} Signal
                     </Badge>
-                    <span className={`text-sm font-medium ${
-                      indicators.signal === 'BUY' 
-                        ? 'text-trading-success' 
+                    <span className={`text-sm font-medium ${indicators.signal === 'BUY'
+                        ? 'text-trading-success'
                         : indicators.signal === 'SELL'
-                        ? 'text-trading-danger'
-                        : 'text-trading-warning'
-                    }`} data-testid="signal-confidence-detailed">
+                          ? 'text-trading-danger'
+                          : 'text-trading-warning'
+                      }`} data-testid="signal-confidence-detailed">
                       {indicators.confidence}% Confidence
                     </span>
                   </div>
                   <p className="text-gray-300 text-sm mb-4">
-                    {indicators.signal === 'BUY' 
+                    {indicators.signal === 'BUY'
                       ? "Strong bullish momentum detected. Technical indicators are aligned for an upward move. Consider entry at current levels with proper risk management."
                       : indicators.signal === 'SELL'
-                      ? "Bearish signals emerging. Multiple indicators suggest downward pressure. Consider taking profits or establishing short positions."
-                      : "Mixed signals detected. Market is in consolidation phase. Wait for clearer direction before making significant moves."
+                        ? "Bearish signals emerging. Multiple indicators suggest downward pressure. Consider taking profits or establishing short positions."
+                        : "Mixed signals detected. Market is in consolidation phase. Wait for clearer direction before making significant moves."
                     }
                   </p>
                   <div className="flex space-x-2">
-                    <Button 
+                    <Button
                       className={indicators.signal === 'BUY' ? 'bg-trading-success hover:bg-green-600' : 'bg-trading-danger hover:bg-red-600'}
                       size="sm"
                       data-testid="button-execute-signal"
                     >
                       Execute {indicators.signal}
                     </Button>
-                    <Button 
-                      variant="outline" 
+                    <Button
+                      variant="outline"
                       size="sm"
                       className="bg-trading-dark border-gray-600 text-white hover:bg-gray-600"
                       data-testid="button-set-alert"
@@ -282,7 +279,7 @@ export default function AnalysisPage() {
                   </li>
                 </ul>
               </div>
-              
+
               <div>
                 <h4 className="text-white font-medium mb-3">Risk Factors</h4>
                 <ul className="space-y-2 text-gray-300 text-sm">

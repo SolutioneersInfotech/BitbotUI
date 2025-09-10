@@ -814,8 +814,8 @@ const Chart: React.FC<{ strategy: string | null; symbol: string }> = ({
         const candleSeries = chart.addSeries(CandlestickSeries);
 
         const url = strategy
-            ? `http://localhost:3000/api/strategy/${symbol}/${strategy}?interval=1d&limit=500`
-            : `http://localhost:3000/api/strategy/candles/${symbol}?interval=1d&limit=500`;
+            ? `https://predator-production.up.railway.app/api/strategy/${symbol}/${strategy}?interval=1d&limit=500`
+            : `https://predator-production.up.railway.app/api/strategy/candles/${symbol}?interval=1d&limit=500`;
 
         console.log("Fetching chart data from:", url);
 

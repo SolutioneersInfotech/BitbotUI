@@ -25,7 +25,7 @@ export default function StrategiesPage() {
   // ✅ API Call for strategy data
   const fetchStrategyData = async (commodity: string, strategy: string) => {
     try {
-      const url = `http://localhost:3000/api/strategy/${commodity}/${strategy}?interval=1d&limit=500`;
+      const url = `https://predator-production.up.railway.app/api/strategy/${commodity}/${strategy}?interval=1d&limit=500`;
       const res = await fetch(url);
       const data = await res.json();
 

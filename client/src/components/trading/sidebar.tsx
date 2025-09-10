@@ -362,7 +362,7 @@ export function TradingSidebar() {
   const { data: commodities, isLoading, error } = useQuery<Commodity[]>({
     queryKey: ["commodities"],
     queryFn: async () => {
-      const res = await fetch("http://localhost:3000/api/commodities");
+      const res = await fetch("https://predator-production.up.railway.app/api/commodities");
       if (!res.ok) throw new Error("Failed to fetch commodities");
       return res.json();
     },
