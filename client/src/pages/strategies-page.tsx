@@ -17,7 +17,7 @@ export default function StrategiesPage() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const { selectedCommodity } = useCommodity();
-  const [selectedStrategy, setSelectedStrategy] = useState<string>("");
+  const [selectedStrategy, setSelectedStrategy] = useState<string | null>("");
   const [currentSignal, setCurrentSignal] = useState<any>(null);
   const [signals, setSignals] = useState<any[]>([]);        // ✅ all signals
   const [latestPrice, setLatestPrice] = useState<number>(); // ✅ current price
@@ -25,8 +25,14 @@ export default function StrategiesPage() {
   // ✅ API Call for strategy data
   const fetchStrategyData = async (commodity: string, strategy: string) => {
     try {
+      const token = localStorage.getItem("token");
       const url = `https://predator-production.up.railway.app/api/strategy/${commodity}/${strategy}?interval=1d&limit=500`;
-      const res = await fetch(url);
+      const res = await fetch(url, {
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`, // ✅ send token here
+        },
+      });
       const data = await res.json();
 
       //     if (data.signals && data.signals.length > 0) {

@@ -242,6 +242,8 @@
 //   );
 // }
 
+
+
 import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -253,7 +255,7 @@ import { TrendingUp, Shield, BarChart3, Zap } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 export default function AuthPage() {
-  const { user, login, register } = useAuth(); // ✅ new functions use
+  const { user, login, register, isLoading, error } = useAuth();
   const [loginData, setLoginData] = useState({ email: "", password: "" });
   const [registerData, setRegisterData] = useState({
     email: "",
@@ -264,27 +266,21 @@ export default function AuthPage() {
 
   const navigate = useNavigate();
 
-  // Redirect if already "logged in"
+  // ✅ Redirect if already logged in
   useEffect(() => {
-    if (user) {
-      navigate("/"); // ✅ redirect
-    }
+    if (user) navigate("/");
   }, [user, navigate]);
 
-  if (user) {
-    return null;
-  }
+  if (user) return null;
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    login(loginData);   // ✅ simple call
-    navigate("/");      // ✅ direct redirect
+    await login(loginData); // ✅ bas API call, redirect useEffect se hoga
   };
 
-  const handleRegister = (e: React.FormEvent) => {
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
-    register(registerData); // ✅ simple call
-    navigate("/");          // ✅ direct redirect
+    await register(registerData); // ✅ bas API call, redirect useEffect se hoga
   };
 
   return (
@@ -295,10 +291,15 @@ export default function AuthPage() {
           <div className="text-center">
             <div className="flex items-center justify-center mb-4">
               <TrendingUp className="h-8 w-8 text-trading-success mr-2" />
-              <h1 className="text-3xl font-bold text-white">TradeProwwwwwwwww</h1>
+              <h1 className="text-3xl font-bold text-white">TradePro</h1>
             </div>
             <p className="text-gray-400">Professional Trading Platform</p>
           </div>
+
+          {/* ✅ Error Message */}
+          {error && (
+            <p className="text-red-500 text-center text-sm">{error}</p>
+          )}
 
           <Tabs defaultValue="login" className="space-y-6">
             <TabsList className="grid w-full grid-cols-2 bg-trading-card">
@@ -310,36 +311,62 @@ export default function AuthPage() {
             <TabsContent value="login">
               <Card className="bg-trading-card border-gray-700">
                 <CardHeader>
-                  <CardTitle className="text-white text-center">Welcome Back</CardTitle>
+                  <CardTitle className="text-white text-center">
+                    Welcome Back
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <form onSubmit={handleLogin} className="space-y-4">
                     <div className="space-y-2">
-                      <Label htmlFor="login-email" className="text-gray-300">Email</Label>
+                      <Label
+                        htmlFor="login-email"
+                        className="text-gray-300"
+                      >
+                        Email
+                      </Label>
                       <Input
                         id="login-email"
                         type="email"
                         value={loginData.email}
-                        onChange={(e) => setLoginData({ ...loginData, email: e.target.value })}
+                        onChange={(e) =>
+                          setLoginData({
+                            ...loginData,
+                            email: e.target.value,
+                          })
+                        }
                         className="bg-trading-dark border-gray-600 text-white focus:border-trading-info"
                         placeholder="Enter your email"
                         required
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="login-password" className="text-gray-300">Password</Label>
+                      <Label
+                        htmlFor="login-password"
+                        className="text-gray-300"
+                      >
+                        Password
+                      </Label>
                       <Input
                         id="login-password"
                         type="password"
                         value={loginData.password}
-                        onChange={(e) => setLoginData({ ...loginData, password: e.target.value })}
+                        onChange={(e) =>
+                          setLoginData({
+                            ...loginData,
+                            password: e.target.value,
+                          })
+                        }
                         className="bg-trading-dark border-gray-600 text-white focus:border-trading-info"
                         placeholder="Enter your password"
                         required
                       />
                     </div>
-                    <Button type="submit" className="w-full bg-trading-info hover:bg-blue-600">
-                      Sign In
+                    <Button
+                      type="submit"
+                      className="w-full bg-trading-info hover:bg-blue-600"
+                      disabled={isLoading}
+                    >
+                      {isLoading ? "Loading..." : "Sign In"}
                     </Button>
                   </form>
                 </CardContent>
@@ -350,58 +377,106 @@ export default function AuthPage() {
             <TabsContent value="register">
               <Card className="bg-trading-card border-gray-700">
                 <CardHeader>
-                  <CardTitle className="text-white text-center">Create Account</CardTitle>
+                  <CardTitle className="text-white text-center">
+                    Create Account
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <form onSubmit={handleRegister} className="space-y-4">
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <Label htmlFor="first-name" className="text-gray-300">First Name</Label>
+                        <Label
+                          htmlFor="first-name"
+                          className="text-gray-300"
+                        >
+                          First Name
+                        </Label>
                         <Input
                           id="first-name"
                           value={registerData.firstName}
-                          onChange={(e) => setRegisterData({ ...registerData, firstName: e.target.value })}
+                          onChange={(e) =>
+                            setRegisterData({
+                              ...registerData,
+                              firstName: e.target.value,
+                            })
+                          }
                           className="bg-trading-dark border-gray-600 text-white focus:border-trading-info"
                           placeholder="First name"
+                          required
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="last-name" className="text-gray-300">Last Name</Label>
+                        <Label
+                          htmlFor="last-name"
+                          className="text-gray-300"
+                        >
+                          Last Name
+                        </Label>
                         <Input
                           id="last-name"
                           value={registerData.lastName}
-                          onChange={(e) => setRegisterData({ ...registerData, lastName: e.target.value })}
+                          onChange={(e) =>
+                            setRegisterData({
+                              ...registerData,
+                              lastName: e.target.value,
+                            })
+                          }
                           className="bg-trading-dark border-gray-600 text-white focus:border-trading-info"
                           placeholder="Last name"
+                          required
                         />
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="register-email" className="text-gray-300">Email</Label>
+                      <Label
+                        htmlFor="register-email"
+                        className="text-gray-300"
+                      >
+                        Email
+                      </Label>
                       <Input
                         id="register-email"
                         type="email"
                         value={registerData.email}
-                        onChange={(e) => setRegisterData({ ...registerData, email: e.target.value })}
+                        onChange={(e) =>
+                          setRegisterData({
+                            ...registerData,
+                            email: e.target.value,
+                          })
+                        }
                         className="bg-trading-dark border-gray-600 text-white focus:border-trading-info"
                         placeholder="Enter your email"
                         required
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="register-password" className="text-gray-300">Password</Label>
+                      <Label
+                        htmlFor="register-password"
+                        className="text-gray-300"
+                      >
+                        Password
+                      </Label>
                       <Input
                         id="register-password"
                         type="password"
                         value={registerData.password}
-                        onChange={(e) => setRegisterData({ ...registerData, password: e.target.value })}
+                        onChange={(e) =>
+                          setRegisterData({
+                            ...registerData,
+                            password: e.target.value,
+                          })
+                        }
                         className="bg-trading-dark border-gray-600 text-white focus:border-trading-info"
                         placeholder="Create a password"
                         required
                       />
                     </div>
-                    <Button type="submit" className="w-full bg-trading-info hover:bg-blue-600">
-                      Create Account
+                    <Button
+                      type="submit"
+                      className="w-full bg-trading-info hover:bg-blue-600"
+                      disabled={isLoading}
+                    >
+                      {isLoading ? "Loading..." : "Create Account"}
                     </Button>
                   </form>
                 </CardContent>
@@ -419,7 +494,8 @@ export default function AuthPage() {
               Trade Like a Pro
             </h2>
             <p className="text-xl text-gray-300">
-              Advanced technical analysis, real-time market data, and AI-powered trading signals
+              Advanced technical analysis, real-time market data, and
+              AI-powered trading signals
             </p>
           </div>
 
@@ -428,7 +504,9 @@ export default function AuthPage() {
               <div className="bg-trading-success bg-opacity-20 rounded-lg p-4 mb-3">
                 <BarChart3 className="h-8 w-8 text-trading-success mx-auto" />
               </div>
-              <h3 className="font-semibold text-white mb-2">Technical Analysis</h3>
+              <h3 className="font-semibold text-white mb-2">
+                Technical Analysis
+              </h3>
               <p className="text-sm text-gray-400">
                 Advanced indicators and chart patterns
               </p>

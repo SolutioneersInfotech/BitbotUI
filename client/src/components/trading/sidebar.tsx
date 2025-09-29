@@ -362,7 +362,14 @@ export function TradingSidebar() {
   const { data: commodities, isLoading, error } = useQuery<Commodity[]>({
     queryKey: ["commodities"],
     queryFn: async () => {
-      const res = await fetch("https://predator-production.up.railway.app/api/commodities");
+      const token = localStorage.getItem("token"); // token stored after login
+
+      const res = await fetch("https://predator-production.up.railway.app/api/commodities", {
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`, // ✅ must include
+        },
+      });
       if (!res.ok) throw new Error("Failed to fetch commodities");
       return res.json();
     },
