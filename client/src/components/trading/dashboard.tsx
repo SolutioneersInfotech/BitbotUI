@@ -796,6 +796,8 @@ import {
 } from "lucide-react";
 import type { Portfolio, Commodity } from "@shared/schema";
 import { useCommodity } from "@/context/Commoditycontext";
+import { BrokerAccounts } from "./BrokerAccount";
+// import { BrokerAccounts } from "./BrokerAccount";
 
 export function Dashboard() {
   const { user, logout } = useAuth();
@@ -998,10 +1000,10 @@ export function Dashboard() {
                 <div className="text-center py-8 text-gray-400">No trade history available</div>
               </TabsContent>
               <TabsContent value="brokers" className="p-6">
-                <div className="text-center py-8">
-                  <p className="text-gray-400">No broker accounts connected</p>
-                  <Button className="mt-4 bg-trading-info hover:bg-blue-600">Connect Broker Account</Button>
-                </div>
+
+                <BrokerAccounts />
+
+
               </TabsContent>
               <TabsContent value="subscription" className="p-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
