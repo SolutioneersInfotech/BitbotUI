@@ -11,8 +11,10 @@ import StrategiesPage from "@/pages/strategies-page";
 import AnalysisPage from "@/pages/analysis-page";
 import PortfolioPage from "@/pages/portfolio-page";
 import ExpertPicksPage from "@/pages/expert-picks-page";
+import Automation from "./pages/Automation-page";
 import { ProtectedRoute } from "./lib/protected-route";
 import { CommodityProvider } from "./context/Commoditycontext";
+
 
 
 function Router() {
@@ -23,6 +25,7 @@ function Router() {
       <ProtectedRoute path="/analysis" component={AnalysisPage} />
       <ProtectedRoute path="/portfolio" component={PortfolioPage} />
       <ProtectedRoute path="/expert-picks" component={ExpertPicksPage} />
+      <ProtectedRoute path="/Automation-page" component={Automation} />
       <Route path="/auth" component={AuthPage} />
       <Route component={NotFound} />
     </Switch>

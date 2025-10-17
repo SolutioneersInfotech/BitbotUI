@@ -854,6 +854,7 @@ export function Dashboard() {
               <Link href="/analysis" className="text-gray-400 hover:text-white transition-colors">Analysis</Link>
               <Link href="/portfolio" className="text-gray-400 hover:text-white transition-colors">Portfolio</Link>
               <Link href="/expert-picks" className="text-gray-400 hover:text-white transition-colors">Expert Picks</Link>
+              <Link href="/Automation-page" className="text-gray-400 hover:text-white transition-colors">Automation</Link>
             </div>
           </div>
           <div className="flex items-center space-x-4">
