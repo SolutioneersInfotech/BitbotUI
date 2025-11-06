@@ -830,9 +830,9 @@ export function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-trading-dark text-white font-inter">
+    <div className="min-h-screen w-full bg-trading-dark text-white font-inter overflow-x-hidden">
       {/* Navigation */}
-      <nav className="bg-trading-card border-b border-gray-700 px-6 py-4">
+      <nav className="w-full bg-trading-card border-b border-gray-700 px-6 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-8">
             <div className="flex items-center">
@@ -845,7 +845,7 @@ export function Dashboard() {
               </button>
               <div className="text-2xl font-bold text-white">
                 <TrendingUp className="inline h-6 w-6 text-trading-success mr-2" />
-                TradePro
+                BitBot
               </div>
             </div>
             <div className="hidden md:flex space-x-6">
@@ -915,7 +915,7 @@ export function Dashboard() {
         </div>
 
         {/* Main Content */}
-        <main className="flex-1 p-6">
+        <main className="flex-1 w-full p-6 bg-trading-dark">
           {/* Market Overview Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             {/* Portfolio Value */}
@@ -986,7 +986,7 @@ export function Dashboard() {
           <Card className="bg-trading-card border-gray-700">
             <Tabs defaultValue="trades" className="w-full">
               <div className="border-b border-gray-700">
-                <TabsList className="bg-transparent w-full justify-start px-6">
+                <TabsList className="bg-transparent w-full justify-start px-6 overflow-x-auto flex-nowrap scrollbar-hide">
                   <TabsTrigger value="trades">Active Trades</TabsTrigger>
                   <TabsTrigger value="history">Trade History</TabsTrigger>
                   <TabsTrigger value="brokers">Broker Accounts</TabsTrigger>
@@ -1053,7 +1053,7 @@ export function Dashboard() {
 
       {/* Mobile Navigation */}
       <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-trading-card border-t border-gray-700 px-6 py-4">
-        <div className="flex justify-around">
+        {/* <div className="flex justify-start overflow-x-auto space-x-6 scrollbar-hide">
           <Link href="/" className="flex flex-col items-center text-white">
             <TrendingUp className="h-5 w-5 mb-1" />
             <span className="text-xs">Dashboard</span>
@@ -1070,7 +1070,38 @@ export function Dashboard() {
             <Headphones className="h-5 w-5 mb-1" />
             <span className="text-xs">Support</span>
           </button>
+        </div> */}
+        <div className="flex justify-start overflow-x-auto space-x-6 scrollbar-hide">
+          <Link href="/" className="flex flex-col items-center text-white">
+            <TrendingUp className="h-5 w-5 mb-1" />
+            <span className="text-xs">Dashboard</span>
+          </Link>
+          <Link href="/strategies" className="flex flex-col items-center text-gray-400">
+            <Target className="h-5 w-5 mb-1" />
+            <span className="text-xs">Strategies</span>
+          </Link>
+          <Link href="/analysis" className="flex flex-col items-center text-gray-400">
+            <Activity className="h-5 w-5 mb-1" />
+            <span className="text-xs">Analysis</span>
+          </Link>
+          <Link href="/portfolio" className="flex flex-col items-center text-gray-400">
+            <Wallet className="h-5 w-5 mb-1" />
+            <span className="text-xs">Portfolio</span>
+          </Link>
+          <Link href="/expert-picks" className="flex flex-col items-center text-gray-400">
+            <Zap className="h-5 w-5 mb-1" />
+            <span className="text-xs">Picks</span>
+          </Link>
+          <Link href="/Automation-page" className="flex flex-col items-center text-gray-400">
+            <Zap className="h-5 w-5 mb-1" />
+            <span className="text-xs">Automation</span>
+          </Link>
+          <button onClick={() => setShowSupportModal(true)} className="flex flex-col items-center text-gray-400">
+            <Headphones className="h-5 w-5 mb-1" />
+            <span className="text-xs">Support</span>
+          </button>
         </div>
+
       </div>
 
       {/* Subscription Modal */}
@@ -1125,6 +1156,7 @@ export function Dashboard() {
     </div>
   );
 }
+
 
 
 
