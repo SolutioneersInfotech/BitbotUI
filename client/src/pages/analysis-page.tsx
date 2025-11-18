@@ -136,7 +136,7 @@ export default function AnalysisPage() {
         {/* Chart and Analysis */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
           <div className="lg:col-span-2">
-            <TradingChart />
+            <TradingChart commodity={commodities?.[0]?.id ?? null} />
           </div>
 
           <div className="space-y-6">

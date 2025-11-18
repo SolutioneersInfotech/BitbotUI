@@ -17,7 +17,7 @@ import Chart from "@/components/trading/stratigy-chart";
 import { useCommodity } from "@/context/Commoditycontext";
 import StrategyList from "@/components/trading/stratigylist";
 import { useState } from "react";
-// import type { TradingStrategy } from "@shared/schema";
+import type { TradingStrategy } from "@shared/schema";
 
 export default function StrategiesPage() {
   const { toast } = useToast();
