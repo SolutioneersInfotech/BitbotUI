@@ -3,7 +3,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
-import { TrendingUp, Activity, BarChart3, Target, ArrowLeft } from "lucide-react";
+import {
+  TrendingUp,
+  Activity,
+  BarChart3,
+  Target,
+  ArrowLeft,
+} from "lucide-react";
 import { Link } from "wouter";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -19,7 +25,7 @@ export default function StrategiesPage() {
   const { selectedCommodity } = useCommodity();
   const [selectedStrategy, setSelectedStrategy] = useState<string | null>("");
   const [currentSignal, setCurrentSignal] = useState<any>(null);
-  const [signals, setSignals] = useState<any[]>([]);        // ✅ all signals
+  const [signals, setSignals] = useState<any[]>([]); // ✅ all signals
   const [latestPrice, setLatestPrice] = useState<number>(); // ✅ current price
 
   // ✅ API Call for strategy data
@@ -30,7 +36,7 @@ export default function StrategiesPage() {
       const res = await fetch(url, {
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`, // ✅ send token here
+          Authorization: `Bearer ${token}`, // ✅ send token here
         },
       });
       const data = await res.json();
@@ -65,13 +71,18 @@ export default function StrategiesPage() {
     }
   };
 
-
   const { data: strategies, isLoading } = useQuery<TradingStrategy[]>({
     queryKey: ["/api/strategies"],
   });
 
   const toggleStrategyMutation = useMutation({
-    mutationFn: async ({ strategyId, isActive }: { strategyId: string; isActive: boolean }) => {
+    mutationFn: async ({
+      strategyId,
+      isActive,
+    }: {
+      strategyId: string;
+      isActive: boolean;
+    }) => {
       await apiRequest("PATCH", `/api/strategies/${strategyId}`, { isActive });
     },
     onSuccess: () => {
@@ -93,23 +104,33 @@ export default function StrategiesPage() {
   return (
     <div className="min-h-screen bg-trading-dark text-white">
       {/* Header */}
-      <div className="bg-trading-card border-b border-gray-700 p-6">
-        <div className="flex items-center justify-between">
+      <div className="bg-trading-card border-b border-gray-700 p-5">
+        {/* top-level flex with two children so justify-between can work */}
+        <div className="flex items-center justify-between w-full">
+          {/* LEFT: back button + title */}
           <div className="flex items-center space-x-4">
             <Link href="/">
-              <Button variant="ghost" size="sm" className="text-gray-400 hover:text-white" data-testid="button-back-home">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-gray-400 hover:text-white"
+                data-testid="button-back-Dashboard"
+              >
                 <ArrowLeft className="h-4 w-4 mr-2" />
-                Back to Dashboard
+                Dashboard
               </Button>
             </Link>
-            <div>
-              <h1 className="text-3xl font-bold text-white flex items-center">
-                <BarChart3 className="h-8 w-8 text-trading-success mr-3" />
-                Trading Strategies
-              </h1>
-              <p className="text-gray-400 mt-1">Configure and manage your automated trading strategies</p>
-            </div>
+
+            <h6 className="text-xl font-bold text-white flex items-center">
+              <BarChart3 className="h-8 w-8 text-trading-success mr-3" />
+              Trading Strategies
+            </h6>
           </div>
+
+          {/* RIGHT: paragraph pushed to the far right */}
+          <p className="text-gray-400 whitespace-nowrap mr-1">
+            Configure and manage your automated trading strategies
+          </p>
         </div>
       </div>
 
@@ -122,8 +143,11 @@ export default function StrategiesPage() {
                 <h3 className="text-gray-400 text-sm">Active Strategies</h3>
                 <Activity className="h-4 w-4 text-trading-success" />
               </div>
-              <div className="text-2xl font-bold text-white mb-1" data-testid="text-active-strategies">
-                {strategies?.filter(s => s.isActive).length || 0}
+              <div
+                className="text-2xl font-bold text-white mb-1"
+                data-testid="text-active-strategies"
+              >
+                {strategies?.filter((s) => s.isActive).length || 0}
               </div>
               <div className="text-trading-success text-sm">
                 Currently running
@@ -137,7 +161,10 @@ export default function StrategiesPage() {
                 <h3 className="text-gray-400 text-sm">Total Strategies</h3>
                 <TrendingUp className="h-4 w-4 text-trading-info" />
               </div>
-              <div className="text-2xl font-bold text-white mb-1" data-testid="text-total-strategies">
+              <div
+                className="text-2xl font-bold text-white mb-1"
+                data-testid="text-total-strategies"
+              >
                 {strategies?.length || 0}
               </div>
               <div className="text-trading-info text-sm">
@@ -152,7 +179,10 @@ export default function StrategiesPage() {
                 <h3 className="text-gray-400 text-sm">Win Rate</h3>
                 <Target className="h-4 w-4 text-trading-warning" />
               </div>
-              <div className="text-2xl font-bold text-white mb-1" data-testid="text-strategy-winrate">
+              <div
+                className="text-2xl font-bold text-white mb-1"
+                data-testid="text-strategy-winrate"
+              >
                 68%
               </div>
               <div className="text-trading-success text-sm">
@@ -167,7 +197,10 @@ export default function StrategiesPage() {
                 <h3 className="text-gray-400 text-sm">Total Profit</h3>
                 <BarChart3 className="h-4 w-4 text-trading-success" />
               </div>
-              <div className="text-2xl font-bold text-white mb-1" data-testid="text-strategy-profit">
+              <div
+                className="text-2xl font-bold text-white mb-1"
+                data-testid="text-strategy-profit"
+              >
                 $2,450
               </div>
               <div className="text-trading-success text-sm">
@@ -204,7 +237,7 @@ export default function StrategiesPage() {
                   setLatestPrice(undefined);
                 }
               }}
-              signals={signals}        // ✅ pass full signals
+              signals={signals} // ✅ pass full signals
               latestPrice={latestPrice} // ✅ pass latest market price
             />
           </Card>
@@ -220,17 +253,17 @@ export default function StrategiesPage() {
           </Card> */}
           <Card className="bg-trading-card border-gray-700">
             {selectedCommodity ? (
-              <Chart symbol={selectedCommodity} strategy={selectedStrategy || null} />
+              <Chart
+                symbol={selectedCommodity}
+                strategy={selectedStrategy || null}
+              />
             ) : (
-              <p className="text-gray-400 p-6">Please select a commodity from Dashboard</p>
+              <p className="text-gray-400 p-6">
+                Please select a commodity from Dashboard
+              </p>
             )}
           </Card>
-
-
-
         </div>
-
-
       </div>
     </div>
   );

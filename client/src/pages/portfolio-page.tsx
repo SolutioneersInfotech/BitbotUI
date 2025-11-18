@@ -31,23 +31,23 @@ export default function PortfolioPage() {
   return (
     <div className="min-h-screen bg-trading-dark text-white">
       {/* Header */}
-      <div className="bg-trading-card border-b border-gray-700 p-6">
-        <div className="flex items-center justify-between">
+      <div className="bg-trading-card border-b border-gray-700 p-5">
+        <div className="flex items-center justify-between w-full">
           <div className="flex items-center space-x-4">
             <Link href="/">
-              <Button variant="ghost" size="sm" className="text-gray-400 hover:text-white" data-testid="button-back-home">
+              <Button variant="ghost" size="sm" className="text-gray-400 hover:text-white" data-testid="button-back-Dashboard">
                 <ArrowLeft className="h-4 w-4 mr-2" />
-                Back to Dashboard
+                Dashboard
               </Button>
             </Link>
-            <div>
-              <h1 className="text-3xl font-bold text-white flex items-center">
-                <Wallet className="h-8 w-8 text-trading-success mr-3" />
-                Portfolio Overview
-              </h1>
-              <p className="text-gray-400 mt-1">Track your trading performance and portfolio metrics</p>
-            </div>
+
+            <h6 className="text-xl font-bold text-white flex items-center">
+              <Wallet className="h-8 w-8 text-trading-success mr-3" />
+              Portfolio Overview
+            </h6>
           </div>
+
+          <p className="text-gray-400 whitespace-nowrap hidden md:block mr-1">Track your trading performance and portfolio metrics</p>
         </div>
       </div>
 

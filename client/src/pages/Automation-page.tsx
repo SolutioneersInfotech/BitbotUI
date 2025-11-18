@@ -77,27 +77,28 @@ export default function Automation() {
     return (
         <div className="min-h-screen bg-trading-dark text-white">
             {/* Header */}
-            <div className="bg-trading-card border-b border-gray-700 p-6">
-                <div className="flex items-center justify-between">
+            <div className="bg-trading-card border-b border-gray-700 p-5">
+                <div className="flex items-center justify-between w-full">
                     <div className="flex items-center space-x-4">
                         <Link href="/">
                             <Button variant="ghost" size="sm" className="text-gray-400 hover:text-white">
                                 <ArrowLeft className="h-4 w-4 mr-2" />
-                                Back to Dashboard
+                                Dashboard
                             </Button>
                         </Link>
-                        <div>
-                            <h1 className="text-3xl font-bold text-white flex items-center">
-                                <Zap className="h-8 w-8 text-trading-warning mr-3" />
-                                Trading Automation
-                            </h1>
-                            <p className="text-gray-400 mt-1">Create and manage automated trading bots</p>
-                        </div>
+
+                        <h6 className="text-xl font-bold text-white flex items-center">
+                            <Zap className="h-8 w-8 text-trading-warning mr-3" />
+                            Trading Automation
+                        </h6>
                     </div>
-                    <Button onClick={() => setShowCreateModal(true)} className="bg-emerald-500 hover:bg-emerald-600">
-                        <Plus className="w-5 h-5 mr-2" />
-                        Create New Bot
-                    </Button>
+                    <div className="flex items-center space-x-3">
+                        <p className="text-gray-400 whitespace-nowrap hidden sm:block">Create and manage automated trading bots</p>
+                        <Button onClick={() => setShowCreateModal(true)} className="bg-emerald-500 hover:bg-emerald-600">
+                            <Plus className="w-5 h-5 mr-2" />
+                            Create New Bot
+                        </Button>
+                    </div>
                 </div>
             </div>
 
