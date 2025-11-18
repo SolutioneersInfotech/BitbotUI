@@ -105,7 +105,7 @@ export default function StrategiesPage() {
             <div>
               <h1 className="text-3xl font-bold text-white flex items-center">
                 <BarChart3 className="h-8 w-8 text-trading-success mr-3" />
-                Trading Strategies ssssshshshsh
+                Trading Strategies
               </h1>
               <p className="text-gray-400 mt-1">Configure and manage your automated trading strategies</p>
             </div>
@@ -119,7 +119,7 @@ export default function StrategiesPage() {
           <Card className="bg-trading-card border-gray-700">
             <CardContent className="pt-6">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-gray-400 text-sm">Active Strategies1111</h3>
+                <h3 className="text-gray-400 text-sm">Active Strategies</h3>
                 <Activity className="h-4 w-4 text-trading-success" />
               </div>
               <div className="text-2xl font-bold text-white mb-1" data-testid="text-active-strategies">
@@ -134,14 +134,14 @@ export default function StrategiesPage() {
           <Card className="bg-trading-card border-gray-700">
             <CardContent className="pt-6">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-gray-400 text-sm">Total Strategies111</h3>
+                <h3 className="text-gray-400 text-sm">Total Strategies</h3>
                 <TrendingUp className="h-4 w-4 text-trading-info" />
               </div>
               <div className="text-2xl font-bold text-white mb-1" data-testid="text-total-strategies">
                 {strategies?.length || 0}
               </div>
               <div className="text-trading-info text-sm">
-                Available strategies1111
+                Available strategies
               </div>
             </CardContent>
           </Card>
