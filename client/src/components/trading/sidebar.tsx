@@ -242,7 +242,7 @@ export function TradingSidebar() {
             <h3 className="text-lg font-semibold text-white mb-4">Quick Actions</h3>
             <div className="space-y-2">
               <Button
-                className="w-full bg-trading-success hover:bg-green-600 text-white"
+                className="w-full bg-trading-success hover:bg-green-600 text-white mb-1"
                 onClick={() => setShowTradeForm(true)}
               >
                 <Plus className="h-4 w-4 mr-2" />
