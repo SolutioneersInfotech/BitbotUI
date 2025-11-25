@@ -165,7 +165,7 @@ export function ActiveTrades() {
   const { data: trades, isLoading, refetch } = useQuery<Trade[]>({
     queryKey: ["/api/trades", userId],
     queryFn: async () => {
-      const response = await fetch(`http://localhost:3000/api/Activetrades?userId=${userId}`);
+      const response = await fetch(`https://predator-production.up.railway.app/api/Activetrades?userId=${userId}`);
       if (!response.ok) throw new Error("Failed to fetch trades");
       return response.json();
     },
@@ -175,7 +175,7 @@ export function ActiveTrades() {
   // ✅ Close Trade Mutation
   const closeTradesMutation = useMutation({
     mutationFn: async (tradeId: string) => {
-      const res = await fetch(`http://localhost:3000/api/trades/${tradeId}/close`, {
+      const res = await fetch(`https://predator-production.up.railway.app/api/trades/${tradeId}/close`, {
         method: "PATCH",
       });
       if (!res.ok) throw new Error("Failed to close trade");
