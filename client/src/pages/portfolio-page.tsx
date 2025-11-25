@@ -13,13 +13,21 @@ export default function PortfolioPage() {
     queryKey: ["/api/portfolio"],
   });
 
+  const userId = "68ea1582539ded5dbe090fef";
+
   const { data: trades } = useQuery<Trade[]>({
-    queryKey: ["/api/trades"],
+    queryKey: ["/api/trades", userId],
+    queryFn: async () => {
+      const response = await fetch(`http://localhost:3000/api/Activetrades?userId=${userId}`);
+      if (!response.ok) throw new Error("Failed to fetch trades");
+      return response.json();
+    },
+    enabled: !!userId,
   });
 
   const activeTrades = trades?.filter(trade => trade.status === 'active') || [];
   const closedTrades = trades?.filter(trade => trade.status === 'closed') || [];
-  
+
   const totalPnL = Number(portfolio?.totalPnl) || 0;
   const todayPnL = Number(portfolio?.todayPnl) || 0;
   const totalValue = Number(portfolio?.totalValue) || 0;
@@ -132,7 +140,7 @@ export default function PortfolioPage() {
                   </div>
                   <Progress value={(winningTrades.length / (closedTrades.length || 1)) * 100} className="h-2" />
                 </div>
-                
+
                 <div>
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-gray-400 text-sm">Losing Trades</span>
@@ -169,24 +177,24 @@ export default function PortfolioPage() {
                   <span className="text-gray-400">Maximum Drawdown</span>
                   <span className="text-trading-danger font-medium">-2.8%</span>
                 </div>
-                
+
                 <div className="flex items-center justify-between">
                   <span className="text-gray-400">Sharpe Ratio</span>
                   <span className="text-trading-success font-medium">1.45</span>
                 </div>
-                
+
                 <div className="flex items-center justify-between">
                   <span className="text-gray-400">Profit Factor</span>
                   <span className="text-trading-info font-medium">2.1</span>
                 </div>
-                
+
                 <div className="flex items-center justify-between">
                   <span className="text-gray-400">Average Win</span>
                   <span className="text-trading-success font-medium">
                     ${winningTrades.length > 0 ? (winningTrades.reduce((sum, trade) => sum + Number(trade.pnl), 0) / winningTrades.length).toFixed(2) : '0.00'}
                   </span>
                 </div>
-                
+
                 <div className="flex items-center justify-between">
                   <span className="text-gray-400">Average Loss</span>
                   <span className="text-trading-danger font-medium">
@@ -221,7 +229,7 @@ export default function PortfolioPage() {
                   </div>
                   <span className="text-white font-medium">45%</span>
                 </div>
-                
+
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
                     <div className="w-3 h-3 bg-gray-400 rounded-full"></div>
@@ -229,7 +237,7 @@ export default function PortfolioPage() {
                   </div>
                   <span className="text-white font-medium">25%</span>
                 </div>
-                
+
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
                     <div className="w-3 h-3 bg-orange-500 rounded-full"></div>
@@ -237,7 +245,7 @@ export default function PortfolioPage() {
                   </div>
                   <span className="text-white font-medium">20%</span>
                 </div>
-                
+
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
                     <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
@@ -272,11 +280,11 @@ export default function PortfolioPage() {
                 {closedTrades.slice(0, 5).map((trade) => {
                   const pnl = Number(trade.pnl) || 0;
                   const isProfitable = pnl >= 0;
-                  
+
                   return (
                     <div key={trade.id} className="flex items-center justify-between p-3 bg-trading-dark rounded" data-testid={`recent-trade-${trade.id}`}>
                       <div className="flex items-center space-x-3">
-                        <Badge 
+                        <Badge
                           variant={trade.type === 'LONG' ? 'default' : 'secondary'}
                           className={trade.type === 'LONG' ? 'bg-trading-success' : 'bg-trading-danger'}
                         >

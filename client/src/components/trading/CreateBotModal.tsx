@@ -305,11 +305,11 @@ export default function CreateBotModal({ onClose, onSuccess }: CreateBotModalPro
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-400 mb-2">
-                    Quantity *
+                    Price *
                   </label>
                   <input
                     type="number"
-                    step="0.0001"
+                    step="1"
                     value={rsiConfig.quantity}
                     onChange={(e) =>
                       setRsiConfig({ ...rsiConfig, quantity: e.target.value })
