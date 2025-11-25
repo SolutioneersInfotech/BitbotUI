@@ -126,88 +126,116 @@ export function TradingSidebar() {
       <aside className="w-64 bg-trading-card min-h-screen p-6">
         <div className="space-y-6">
 
-          {/* Strategies */}
-          <div>
-            <h3 className="text-lg font-semibold text-white mb-4">
-              Trading Strategies
-            </h3>
-            <div className="space-y-2">
-              {strategies?.length ? (
-                strategies.map((strategy) => (
-                  <div
-                    key={strategy.id}
-                    className={`bg-trading-dark rounded-lg p-3 ${strategy.isActive
+          {/* Commodities */}
+        <div className="-mr-1">
+          <h3 className="text-lg font-semibold text-white mb-4">Commodities</h3>
+          <div className="h-80 overflow-auto">
+            <div className="space-y-1 min-w-max">
+              {isLoading && (
+                <div className="text-gray-400 text-sm">Loading...</div>
+              )}
+              {error && (
+                <div className="text-red-400 text-sm">
+                  Failed to fetch commodities
+                </div>
+              )}
+              {commodities?.length
+                ? commodities.map((commodity, index) => {
+                    const IconComponent =
+                      commodityIcons[
+                        commodity.symbol as keyof typeof commodityIcons
+                      ] || Coins;
+
+                    const engine = toEngineSymbol(commodity.symbol);
+                    const isSelected = selectedCommodity === engine;
+
+                    return (
+                      <div
+                        key={index}
+                        onClick={() => setSelectedCommodity(engine)} // 👈 context update
+                        className={`flex items-center justify-between rounded-md p-3 h-9 cursor-pointer transition-colors min-w-[100px] whitespace-nowrap
+                        ${
+                          isSelected
+                            ? "bg-trading-success border-l-4 border-green-500"
+                            : "bg-trading-dark hover:bg-gray-700"
+                        }`}
+                      >
+                        <div className="flex items-center space-x-1">
+                          <div className="w-6 h-6 bg-yellow-500 rounded-full flex items-center justify-center flex-shrink-0">
+                            <IconComponent className="h-2 w-2 text-white" />
+                          </div>
+                          <div>
+                            <div className="text-white text-sm font-medium">
+                              {commodity.name}
+                            </div>
+                            {/* <div className="text-gray-400 text-xs">
+                            {commodity.symbol}
+                          </div> */}
+                          </div>
+                        </div>
+                        <div className="text-right flex-shrink-0">
+                          <div className="text-sm font-medium text-white">
+                            {Number.isFinite(Number(commodity.price))
+                              ? `$${Math.round(
+                                  Number(commodity.price)
+                                ).toLocaleString()}`
+                              : "N/A"}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })
+                : !isLoading && (
+                    <div className="text-gray-400 text-sm">
+                      No commodities data available
+                    </div>
+                  )}
+            </div>
+          </div>
+        </div>
+
+
+        {/* Strategies */}
+        <div>
+          <h3 className="text-lg font-semibold text-white mb-4">
+            Trading Strategies
+          </h3>
+          <div className="space-y-2">
+            {strategies?.length ? (
+              strategies.map((strategy) => (
+                <div
+                  key={strategy.id}
+                  className={`bg-trading-dark rounded-lg p-3 ${
+                    strategy.isActive
                       ? "border-l-4 border-trading-success"
                       : "cursor-pointer hover:border-l-4 hover:border-trading-info transition-all"
-                      }`}
-                  >
-                    <div className="flex items-center justify-between">
-                      <span
-                        className={
-                          strategy.isActive
-                            ? "text-white font-medium"
-                            : "text-gray-300"
-                        }
-                      >
-                        {strategy.name}
-                      </span>
-                      {strategy.isActive && (
-                        <span className="text-trading-success text-xs">
-                          ACTIVE
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <div className="text-gray-400 text-sm">No strategies available</div>
-              )}
-            </div>
-          </div>
-
-          {/* Commodities */}
-          <div>
-            <h3 className="text-lg font-semibold text-white mb-4">Commodities</h3>
-            <div className="max-h-64 overflow-auto pr-2">
-              <div className="space-y-2 min-w-max">
-                {isLoading && <div className="text-gray-400 text-sm">Loading...</div>}
-                {error && <div className="text-red-400 text-sm">Failed to fetch</div>}
-
-                {commodities?.map((commodity, index) => {
-                  const IconComponent =
-                    commodityIcons[commodity.symbol as keyof typeof commodityIcons] || Coins;
-
-                  const engine = toEngineSymbol(commodity.symbol);
-                  const isSelected = selectedCommodity === engine;
-
-                  return (
-                    <div
-                      key={index}
-                      onClick={() => setSelectedCommodity(engine)}
-                      className={`flex items-center justify-between rounded-lg p-3 cursor-pointer transition-colors min-w-[300px] whitespace-nowrap
-                        ${isSelected
-                          ? "bg-trading-success border-l-4 border-green-500"
-                          : "bg-trading-dark hover:bg-gray-700"
-                        }`}
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <span
+                      className={
+                        strategy.isActive
+                          ? "text-white font-medium"
+                          : "text-gray-300"
+                      }
                     >
-                      <div className="flex items-center space-x-3">
-                        <div className="w-8 h-8 bg-yellow-500 rounded-full flex items-center justify-center">
-                          <IconComponent className="h-4 w-4 text-white" />
-                        </div>
-                        <div>
-                          <div className="text-white font-medium">{commodity.name}</div>
-                          <div className="text-gray-400 text-xs">{commodity.symbol}</div>
-                        </div>
-                      </div>
-                      <div className="font-medium text-white">
-                        {commodity.price ? `$${commodity.price.toLocaleString()}` : "N/A"}
-                      </div>
-                    </div>
-                  );
-                })}
+                      {strategy.name}
+                    </span>
+                    {strategy.isActive && (
+                      <span className="text-trading-success text-xs">
+                        ACTIVE
+                      </span>
+                    )}
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="text-gray-400 text-sm">
+                No strategies available
               </div>
-            </div>
+            )}
           </div>
+        </div>
 
           {/* Quick Actions */}
           <div>
