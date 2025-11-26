@@ -18,7 +18,7 @@ export default function AnalysisPage() {
   });
 
   return (
-    <div className="min-h-screen bg-trading-dark text-white">
+    <div className="flex flex-col h-full min-h-0 bg-trading-dark text-white">
       {/* Header */}
       <div className="bg-trading-card border-b border-gray-700 p-5">
         <div className="flex items-center justify-between w-full">
@@ -54,7 +54,7 @@ export default function AnalysisPage() {
         </div>
       </div>
 
-      <div className="p-6">
+  <div className="flex-1 min-h-0 p-6 overflow-y-auto">
         {/* Analysis Overview */}
         <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
           <Card className="bg-trading-card border-gray-700">

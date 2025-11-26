@@ -102,7 +102,7 @@ export default function StrategiesPage() {
   });
 
   return (
-    <div className="min-h-screen bg-trading-dark text-white">
+    <div className="flex flex-col h-full min-h-0 bg-trading-dark text-white">
       {/* Header */}
       <div className="bg-trading-card border-b border-gray-700 p-5">
         {/* top-level flex with two children so justify-between can work */}
@@ -134,7 +134,7 @@ export default function StrategiesPage() {
         </div>
       </div>
 
-      <div className="p-6">
+  <div className="flex-1 min-h-0 p-6 overflow-y-auto">
         {/* Strategy Performance Overview */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           <Card className="bg-trading-card border-gray-700">

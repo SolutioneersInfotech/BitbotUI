@@ -69,10 +69,32 @@ export function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen w-full bg-trading-dark text-white font-inter ">
-      {/* Navigation */}
-      <nav className="w-full bg-trading-card border-b border-gray-700 px-6 py-4 sticky top-0 z-50">
+    <div className="flex h-screen flex-col overflow-hidden bg-trading-dark text-white font-inter">
+      {/* Mobile Sidebar Overlay */}
+      {isSidebarOpen && (
+        <div className="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-40">
+          <div className="w-64 bg-trading-card h-full overflow-y-auto flex flex-col">
+            <div className="p-4 border-b border-gray-700 flex justify-between items-center flex-shrink-0">
+              <span className="font-semibold text-white">Menu</span>
+              <button
+                onClick={() => setIsSidebarOpen(false)}
+                className="text-gray-400 hover:text-white"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            {/* ✅ Sidebar with commodity select */}
+            <TradingSidebar
+              commodities={commodities}
+              onSelectCommodity={(c) => setSelectedCommodity(c)}
+              selectedCommodity={selectedCommodity}
+            />
+          </div>
+        </div>
+      )}
 
+      {/* Navigation - Full Width at Top */}
+      <header className="flex-shrink-0 bg-trading-card border-b border-gray-700 px-6 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-8">
             <div className="flex items-center">
@@ -119,43 +141,21 @@ export function Dashboard() {
             </div>
           </div>
         </div>
-      </nav>
+      </header>
 
-      <div className="flex relative">
-        {/* Mobile Sidebar Overlay */}
-        {isSidebarOpen && (
-          <div className="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-40">
-            <div className="w-64 bg-trading-card min-h-screen">
-              <div className="p-4 border-b border-gray-700 flex justify-between items-center">
-                <span className="font-semibold text-white">Menu</span>
-                <button
-                  onClick={() => setIsSidebarOpen(false)}
-                  className="text-gray-400 hover:text-white"
-                >
-                  <X className="h-5 w-5" />
-                </button>
-              </div>
-              {/* ✅ Sidebar with commodity select */}
-              <TradingSidebar
-                commodities={commodities}
-                onSelectCommodity={(c) => setSelectedCommodity(c)}
-                selectedCommodity={selectedCommodity}
-              />
-            </div>
-          </div>
-        )}
-
-        {/* Desktop Sidebar */}
-        <div className="hidden lg:block h-screen sticky top-0">
+      {/* Content Area - Sidebar + Main */}
+      <div className="flex flex-1 min-h-0">
+  {/* Desktop Sidebar - Fixed Width */}
+  <aside className="hidden lg:block w-64 flex-shrink-0 h-full overflow-y-auto bg-trading-card border-r border-gray-700 sidebar-scroll">
           <TradingSidebar
             commodities={commodities}
             onSelectCommodity={(c) => setSelectedCommodity(c)}
             selectedCommodity={selectedCommodity}
           />
-        </div>
+        </aside>
 
-        {/* Main Content */}
-        <main className="flex-1 w-full p-6 bg-trading-dark">
+        {/* Main Content Area - Scrollable */}
+        <main className="flex-1 overflow-y-auto min-h-0 p-6 bg-trading-dark">
           {/* Market Overview Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             {/* Portfolio Value */}
@@ -218,7 +218,7 @@ export function Dashboard() {
               <TradingChart commodity={selectedCommodity} />
             </div>
             <div>
-              <TechnicalAnalysis commodity={selectedCommodity} /> {/* ✅ strategy page bhi sync hoga */}
+              <TechnicalAnalysis />
             </div>
           </div>
 
@@ -289,59 +289,40 @@ export function Dashboard() {
             </Tabs>
           </Card>
         </main>
-      </div>
 
-      {/* Mobile Navigation */}
-      <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-trading-card border-t border-gray-700 px-6 py-4">
-        {/* <div className="flex justify-start overflow-x-auto space-x-6 scrollbar-hide">
-          <Link href="/" className="flex flex-col items-center text-white">
-            <TrendingUp className="h-5 w-5 mb-1" />
-            <span className="text-xs">Dashboard</span>
-          </Link>
-          <Link href="/portfolio" className="flex flex-col items-center text-gray-400">
-            <Activity className="h-5 w-5 mb-1" />
-            <span className="text-xs">Portfolio</span>
-          </Link>
-          <Link href="/expert-picks" className="flex flex-col items-center text-gray-400">
-            <Zap className="h-5 w-5 mb-1" />
-            <span className="text-xs">Picks</span>
-          </Link>
-          <button onClick={() => setShowSupportModal(true)} className="flex flex-col items-center text-gray-400">
-            <Headphones className="h-5 w-5 mb-1" />
-            <span className="text-xs">Support</span>
-          </button>
-        </div> */}
-        <div className="flex justify-start overflow-x-auto space-x-6 scrollbar-hide">
-          <Link href="/" className="flex flex-col items-center text-white">
-            <TrendingUp className="h-5 w-5 mb-1" />
-            <span className="text-xs">Dashboard</span>
-          </Link>
-          <Link href="/strategies" className="flex flex-col items-center text-gray-400">
-            <Target className="h-5 w-5 mb-1" />
-            <span className="text-xs">Strategies</span>
-          </Link>
-          <Link href="/analysis" className="flex flex-col items-center text-gray-400">
-            <Activity className="h-5 w-5 mb-1" />
-            <span className="text-xs">Analysis</span>
-          </Link>
-          <Link href="/portfolio" className="flex flex-col items-center text-gray-400">
-            <Wallet className="h-5 w-5 mb-1" />
-            <span className="text-xs">Portfolio</span>
-          </Link>
-          <Link href="/expert-picks" className="flex flex-col items-center text-gray-400">
-            <Zap className="h-5 w-5 mb-1" />
-            <span className="text-xs">Picks</span>
-          </Link>
-          <Link href="/Automation-page" className="flex flex-col items-center text-gray-400">
-            <Zap className="h-5 w-5 mb-1" />
-            <span className="text-xs">Automation</span>
-          </Link>
-          <button onClick={() => setShowSupportModal(true)} className="flex flex-col items-center text-gray-400">
-            <Headphones className="h-5 w-5 mb-1" />
-            <span className="text-xs">Support</span>
-          </button>
+        {/* Mobile Navigation - Fixed at Bottom */}
+        <div className="lg:hidden flex-shrink-0 bg-trading-card border-t border-gray-700 px-6 py-4">
+          <div className="flex justify-start overflow-x-auto space-x-6 scrollbar-hide">
+            <Link href="/" className="flex flex-col items-center text-white">
+              <TrendingUp className="h-5 w-5 mb-1" />
+              <span className="text-xs">Dashboard</span>
+            </Link>
+            <Link href="/strategies" className="flex flex-col items-center text-gray-400">
+              <Target className="h-5 w-5 mb-1" />
+              <span className="text-xs">Strategies</span>
+            </Link>
+            <Link href="/analysis" className="flex flex-col items-center text-gray-400">
+              <Activity className="h-5 w-5 mb-1" />
+              <span className="text-xs">Analysis</span>
+            </Link>
+            <Link href="/portfolio" className="flex flex-col items-center text-gray-400">
+              <Wallet className="h-5 w-5 mb-1" />
+              <span className="text-xs">Portfolio</span>
+            </Link>
+            <Link href="/expert-picks" className="flex flex-col items-center text-gray-400">
+              <Zap className="h-5 w-5 mb-1" />
+              <span className="text-xs">Picks</span>
+            </Link>
+            <Link href="/Automation-page" className="flex flex-col items-center text-gray-400">
+              <Zap className="h-5 w-5 mb-1" />
+              <span className="text-xs">Automation</span>
+            </Link>
+            <button onClick={() => setShowSupportModal(true)} className="flex flex-col items-center text-gray-400">
+              <Headphones className="h-5 w-5 mb-1" />
+              <span className="text-xs">Support</span>
+            </button>
+          </div>
         </div>
-
       </div>
 
       {/* Subscription Modal */}

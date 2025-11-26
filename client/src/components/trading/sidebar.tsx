@@ -122,8 +122,8 @@ export function TradingSidebar() {
         </div>
       )}
 
-      {/* SIDEBAR */}
-      <aside className="w-64 bg-trading-card min-h-screen p-6">
+  {/* SIDEBAR */}
+  <aside className="w-64 bg-trading-card h-full p-6 overflow-y-auto sidebar-scroll">
         <div className="space-y-6">
 
           {/* Commodities */}
