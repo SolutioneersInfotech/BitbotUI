@@ -213,11 +213,11 @@ export default function ExpertPicksPage() {
                         <div className="flex items-center justify-between p-3 bg-trading-card rounded">
                           <span className="text-gray-400">Signal Strength</span>
                           <span className={`font-medium ${
-                            pick.confidence >= 80 ? 'text-trading-success' : 
-                            pick.confidence >= 60 ? 'text-trading-warning' : 'text-trading-danger'
-                          }`}>
-                            {pick.confidence >= 80 ? 'Strong' : pick.confidence >= 60 ? 'Medium' : 'Weak'}
-                          </span>
+                                                      (pick.confidence ?? 0) >= 80 ? 'text-trading-success' : 
+                                                      (pick.confidence ?? 0) >= 60 ? 'text-trading-warning' : 'text-trading-danger'
+                                                    }`}>
+                                                      {(pick.confidence ?? 0) >= 80 ? 'Strong' : (pick.confidence ?? 0) >= 60 ? 'Medium' : 'Weak'}
+                                                    </span>
                         </div>
                       </div>
 

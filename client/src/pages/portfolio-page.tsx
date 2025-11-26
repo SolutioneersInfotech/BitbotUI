@@ -7,6 +7,7 @@ import { ArrowLeft, Wallet, TrendingUp, TrendingDown, Activity, Target, DollarSi
 import { Link } from "wouter";
 import { ActiveTrades } from "@/components/trading/active-trades";
 import type { Portfolio, Trade } from "@shared/schema";
+import { useDeltaBalance } from "@/sources/portfolio-source";
 
 export default function PortfolioPage() {
   const { data: portfolio } = useQuery<Portfolio>({
@@ -25,15 +26,7 @@ export default function PortfolioPage() {
     enabled: !!userId,
   });
 
-  const { data: deltaBalance } = useQuery({
-    queryKey: ["delta-balance", userId],
-    queryFn: async () => {
-      const response = await fetch(`http://localhost:3000/api/delta/balance?userId=${userId}`);
-      if (!response.ok) throw new Error("Failed to fetch wallet balance");
-      return response.json();
-    },
-    enabled: !!userId,
-  });
+  const { data: deltaBalance } = useDeltaBalance();
 
   const walletBalance = Number(deltaBalance?.result?.[0]?.balance || 0);
 
