@@ -25,6 +25,18 @@ export default function PortfolioPage() {
     enabled: !!userId,
   });
 
+  const { data: deltaBalance } = useQuery({
+    queryKey: ["delta-balance", userId],
+    queryFn: async () => {
+      const response = await fetch(`http://localhost:3000/api/delta/balance?userId=${userId}`);
+      if (!response.ok) throw new Error("Failed to fetch wallet balance");
+      return response.json();
+    },
+    enabled: !!userId,
+  });
+
+  const walletBalance = Number(deltaBalance?.result?.[0]?.balance || 0);
+
   const activeTrades = trades?.filter(trade => trade.status === 'active') || [];
   const closedTrades = trades?.filter(trade => trade.status === 'closed') || [];
 
@@ -68,8 +80,9 @@ export default function PortfolioPage() {
                 <h3 className="text-gray-400 text-sm">Total Portfolio Value</h3>
                 <Wallet className="h-4 w-4 text-trading-success" />
               </div>
-              <div className="text-3xl font-bold text-white mb-1" data-testid="text-portfolio-total-value">
-                ${totalValue.toLocaleString()}
+              <div className="text-3xl font-bold text-white mb-1" >
+                ${walletBalance.toLocaleString()}
+
               </div>
               <div className={`text-sm ${totalPnL >= 0 ? 'text-trading-success' : 'text-trading-danger'}`}>
                 <span className="mr-1">{totalPnL >= 0 ? '↗' : '↘'}</span>

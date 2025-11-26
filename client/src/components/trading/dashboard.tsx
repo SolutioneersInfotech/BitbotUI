@@ -805,6 +805,8 @@ export function Dashboard() {
   const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
   const [showSupportModal, setShowSupportModal] = useState(false);
 
+
+
   // ✅ Global state via context
   const { selectedCommodity, setSelectedCommodity } = useCommodity();
 
@@ -814,6 +816,20 @@ export function Dashboard() {
     subject: "Technical Issue",
     message: ""
   });
+  const userId = "68ea1582539ded5dbe090fef";
+
+
+  const { data: deltaBalance } = useQuery({
+    queryKey: ["delta-balance", userId],
+    queryFn: async () => {
+      const response = await fetch(`http://localhost:3000/api/delta/balance?userId=${userId}`);
+      if (!response.ok) throw new Error("Failed to fetch wallet balance");
+      return response.json();
+    },
+    enabled: !!userId,
+  });
+
+  const walletBalance = Number(deltaBalance?.result?.[0]?.balance || 0);
 
   const { data: portfolio } = useQuery<Portfolio>({
     queryKey: ["/api/portfolio"],
@@ -830,9 +846,10 @@ export function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen w-full bg-trading-dark text-white font-inter overflow-x-hidden">
+    <div className="min-h-screen w-full bg-trading-dark text-white font-inter ">
       {/* Navigation */}
-      <nav className="w-full bg-trading-card border-b border-gray-700 px-6 py-4">
+      <nav className="w-full bg-trading-card border-b border-gray-700 px-6 py-4 sticky top-0 z-50">
+
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-8">
             <div className="flex items-center">
@@ -861,7 +878,7 @@ export function Dashboard() {
             <div className="hidden md:flex items-center space-x-2 bg-trading-dark px-3 py-2 rounded-lg">
               <Wallet className="h-4 w-4 text-trading-success" />
               <span className="text-white font-medium" data-testid="text-portfolio-balance">
-                ${portfolio?.totalValue || "0.00"}
+                ${walletBalance.toLocaleString()}
               </span>
             </div>
             <Button
@@ -906,7 +923,7 @@ export function Dashboard() {
         )}
 
         {/* Desktop Sidebar */}
-        <div className="hidden lg:block">
+        <div className="hidden lg:block h-screen sticky top-0">
           <TradingSidebar
             commodities={commodities}
             onSelectCommodity={(c) => setSelectedCommodity(c)}
@@ -925,7 +942,7 @@ export function Dashboard() {
                   <h3 className="text-gray-400 text-sm">Portfolio Value</h3>
                   <TrendingUp className="h-4 w-4 text-trading-success" />
                 </div>
-                <div className="text-2xl font-bold text-white mb-1">${portfolio?.totalValue || "0.00"}</div>
+                <div className="text-2xl font-bold text-white mb-1">${walletBalance.toLocaleString()}</div>
                 <div className="text-trading-success text-sm">
                   <span className="mr-1">↗</span>+{portfolio?.totalPnl || "0.00"}
                 </div>

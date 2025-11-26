@@ -172,6 +172,9 @@ export function ActiveTrades() {
     enabled: !!userId,
   });
 
+
+
+
   // ✅ Close Trade Mutation
   const closeTradesMutation = useMutation({
     mutationFn: async (tradeId: string) => {
