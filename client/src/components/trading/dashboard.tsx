@@ -30,6 +30,7 @@ import Chart from "@/components/trading/stratigy-chart";
 import { BrokerAccounts } from "./BrokerAccount";
 import { useDeltaBalance } from "@/sources/portfolio-source";
 // import { BrokerAccounts } from "./BrokerAccount";
+import { useActiveTrades } from "@/sources/trades-source";
 
 export function Dashboard() {
   const { user, logout } = useAuth();
@@ -37,7 +38,10 @@ export function Dashboard() {
   const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
   const [showSupportModal, setShowSupportModal] = useState(false);
 
+  // ✅ Fetch Active Trades for the user
+  const { data: trades, isLoading, refetch } = useActiveTrades();
 
+  const activeTrades = trades ? trades?.filter((trade) => trade.status === "active") || [] : [];
 
   // ✅ Global state via context
   const { selectedCommodity, setSelectedCommodity } = useCommodity();
@@ -181,7 +185,7 @@ export function Dashboard() {
                   <h3 className="text-gray-400 text-sm">Active Trades</h3>
                   <Activity className="h-4 w-4 text-trading-info" />
                 </div>
-                <div className="text-2xl font-bold text-white mb-1">0</div>
+                <div className="text-2xl font-bold text-white mb-1">{activeTrades.length}</div>
                 <div className="text-trading-info text-sm">Ready to trade</div>
               </CardContent>
             </Card>
@@ -240,7 +244,7 @@ export function Dashboard() {
               </div>
 
               <TabsContent value="trades" className="p-6">
-                <ActiveTrades />
+                <ActiveTrades activeTrades={activeTrades} isLoading={isLoading} refetch={refetch} />
               </TabsContent>
               <TabsContent value="history" className="p-6">
                 <div className="text-center py-8 text-gray-400">No trade history available</div>
