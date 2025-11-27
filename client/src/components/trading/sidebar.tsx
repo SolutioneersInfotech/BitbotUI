@@ -122,28 +122,28 @@ export function TradingSidebar() {
         </div>
       )}
 
-  {/* SIDEBAR */}
-  <aside className="w-64 bg-trading-card h-full p-6 overflow-y-auto sidebar-scroll">
+      {/* SIDEBAR */}
+      <aside className="w-64 bg-trading-card h-full p-6 overflow-y-auto sidebar-scroll">
         <div className="space-y-6">
 
           {/* Commodities */}
-        <div className="-mr-1">
-          <h3 className="text-lg font-semibold text-white mb-4">Commodities</h3>
-          <div className="h-80 overflow-auto">
-            <div className="space-y-1 min-w-max">
-              {isLoading && (
-                <div className="text-gray-400 text-sm">Loading...</div>
-              )}
-              {error && (
-                <div className="text-red-400 text-sm">
-                  Failed to fetch commodities
-                </div>
-              )}
-              {commodities?.length
-                ? commodities.map((commodity, index) => {
+          <div className="-mr-1">
+            <h3 className="text-lg font-semibold text-white mb-4">Commodities</h3>
+            <div className="h-80 overflow-auto">
+              <div className="space-y-1 min-w-max">
+                {isLoading && (
+                  <div className="text-gray-400 text-sm">Loading...</div>
+                )}
+                {error && (
+                  <div className="text-red-400 text-sm">
+                    Failed to fetch commodities
+                  </div>
+                )}
+                {commodities?.length
+                  ? commodities.map((commodity, index) => {
                     const IconComponent =
                       commodityIcons[
-                        commodity.symbol as keyof typeof commodityIcons
+                      commodity.symbol as keyof typeof commodityIcons
                       ] || Coins;
 
                     const engine = toEngineSymbol(commodity.symbol);
@@ -154,11 +154,10 @@ export function TradingSidebar() {
                         key={index}
                         onClick={() => setSelectedCommodity(engine)} // 👈 context update
                         className={`flex items-center justify-between rounded-md p-3 h-9 cursor-pointer transition-colors min-w-[100px] whitespace-nowrap
-                        ${
-                          isSelected
+                        ${isSelected
                             ? "bg-trading-success border-l-4 border-green-500"
                             : "bg-trading-dark hover:bg-gray-700"
-                        }`}
+                          }`}
                       >
                         <div className="flex items-center space-x-1">
                           <div className="w-6 h-6 bg-yellow-500 rounded-full flex items-center justify-center flex-shrink-0">
@@ -176,66 +175,63 @@ export function TradingSidebar() {
                         <div className="text-right flex-shrink-0">
                           <div className="text-sm font-medium text-white">
                             {Number.isFinite(Number(commodity.price))
-                              ? `$${Math.round(
-                                  Number(commodity.price)
-                                ).toLocaleString()}`
+                              ? `$${Number(commodity.price).toFixed(2)}`
                               : "N/A"}
                           </div>
                         </div>
                       </div>
                     );
                   })
-                : !isLoading && (
+                  : !isLoading && (
                     <div className="text-gray-400 text-sm">
                       No commodities data available
                     </div>
                   )}
+              </div>
             </div>
           </div>
-        </div>
 
 
-        {/* Strategies */}
-        <div>
-          <h3 className="text-lg font-semibold text-white mb-4">
-            Trading Strategies
-          </h3>
-          <div className="space-y-2">
-            {strategies?.length ? (
-              strategies.map((strategy) => (
-                <div
-                  key={strategy.id}
-                  className={`bg-trading-dark rounded-lg p-3 ${
-                    strategy.isActive
-                      ? "border-l-4 border-trading-success"
-                      : "cursor-pointer hover:border-l-4 hover:border-trading-info transition-all"
-                  }`}
-                >
-                  <div className="flex items-center justify-between">
-                    <span
-                      className={
-                        strategy.isActive
-                          ? "text-white font-medium"
-                          : "text-gray-300"
-                      }
-                    >
-                      {strategy.name}
-                    </span>
-                    {strategy.isActive && (
-                      <span className="text-trading-success text-xs">
-                        ACTIVE
+          {/* Strategies */}
+          <div>
+            <h3 className="text-lg font-semibold text-white mb-4">
+              Trading Strategies
+            </h3>
+            <div className="space-y-2">
+              {strategies?.length ? (
+                strategies.map((strategy) => (
+                  <div
+                    key={strategy.id}
+                    className={`bg-trading-dark rounded-lg p-3 ${strategy.isActive
+                        ? "border-l-4 border-trading-success"
+                        : "cursor-pointer hover:border-l-4 hover:border-trading-info transition-all"
+                      }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <span
+                        className={
+                          strategy.isActive
+                            ? "text-white font-medium"
+                            : "text-gray-300"
+                        }
+                      >
+                        {strategy.name}
                       </span>
-                    )}
+                      {strategy.isActive && (
+                        <span className="text-trading-success text-xs">
+                          ACTIVE
+                        </span>
+                      )}
+                    </div>
                   </div>
+                ))
+              ) : (
+                <div className="text-gray-400 text-sm">
+                  No strategies available
                 </div>
-              ))
-            ) : (
-              <div className="text-gray-400 text-sm">
-                No strategies available
-              </div>
-            )}
+              )}
+            </div>
           </div>
-        </div>
 
           {/* Quick Actions */}
           <div>
