@@ -3,7 +3,6 @@ import { useAuth } from "@/hooks/use-auth";
 import { Link } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { TradingSidebar } from "./sidebar";
-import { TradingChart } from "./chart";
 import { TechnicalAnalysis } from "./technical-analysis";
 import { ActiveTrades } from "./active-trades";
 import { Modal } from "@/components/ui/modal";
@@ -27,6 +26,7 @@ import {
 } from "lucide-react";
 import type { Portfolio, Commodity } from "@shared/schema";
 import { useCommodity } from "@/context/Commoditycontext";
+import Chart from "@/components/trading/stratigy-chart";
 import { BrokerAccounts } from "./BrokerAccount";
 import { useDeltaBalance } from "@/sources/portfolio-source";
 // import { BrokerAccounts } from "./BrokerAccount";
@@ -42,6 +42,8 @@ export function Dashboard() {
   // ✅ Global state via context
   const { selectedCommodity, setSelectedCommodity } = useCommodity();
 
+  console.log("Selected Commodity:", selectedCommodity);
+
   const [supportForm, setSupportForm] = useState({
     name: "",
     email: "",
@@ -51,7 +53,7 @@ export function Dashboard() {
 
 
   const { data: deltaBalance } = useDeltaBalance();
-  
+
   const walletBalance = Number(deltaBalance?.result?.[0]?.balance || 0);
 
   const { data: portfolio } = useQuery<Portfolio>({
@@ -145,8 +147,8 @@ export function Dashboard() {
 
       {/* Content Area - Sidebar + Main */}
       <div className="flex flex-1 min-h-0">
-  {/* Desktop Sidebar - Fixed Width */}
-  <aside className="hidden lg:block w-64 flex-shrink-0 h-full overflow-y-auto bg-trading-card border-r border-gray-700 sidebar-scroll">
+        {/* Desktop Sidebar - Fixed Width */}
+        <aside className="hidden lg:block w-64 flex-shrink-0 h-full overflow-y-auto bg-trading-card border-r border-gray-700 sidebar-scroll">
           <TradingSidebar
             commodities={commodities}
             onSelectCommodity={(c) => setSelectedCommodity(c)}
@@ -214,8 +216,11 @@ export function Dashboard() {
           {/* Chart and Technical Analysis */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
             <div className="lg:col-span-2">
-              {/* ✅ Pass selected commodity */}
-              <TradingChart commodity={selectedCommodity} />
+              <Card className="bg-trading-card border-gray-700 mb-6">
+                {/* ✅ Pass selected commodity */}
+                <Chart symbol={selectedCommodity} />
+              </Card>
+
             </div>
             <div>
               <TechnicalAnalysis />
