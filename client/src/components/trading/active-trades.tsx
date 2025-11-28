@@ -22,7 +22,7 @@ export function ActiveTrades({activeTrades, isLoading, refetch}:{activeTrades:an
   // ✅ Close Trade Mutation
   const closeTradesMutation = useMutation({
     mutationFn: async (tradeId: string) => {
-      const res = await fetch(`https://predator-production.up.railway.app/api/trades/${tradeId}/close`, {
+      const res = await fetch(`http://localhost:3000/api/trades/${tradeId}/close`, {
         method: "PATCH",
       });
       if (!res.ok) throw new Error("Failed to close trade");
@@ -113,18 +113,39 @@ export function ActiveTrades({activeTrades, isLoading, refetch}:{activeTrades:an
                 </td>
 
                 <td className="py-4">
-                  <span
-                    className={`px-2 py-1 rounded text-sm ${trade.type === "LONG"
-                      ? "bg-trading-success bg-opacity-20 text-trading-success"
-                      : "bg-trading-danger bg-opacity-20 text-trading-danger"
-                      }`}
-                  >
-                    {trade.type}
-                  </span>
+                  {(() => {
+                    const isLong = trade.type === "BUY" || trade.type === "LONG";
+                    const label = isLong ? "Long " : "Short";
+                    const icon = isLong ? "▲" : "▼";
+
+                    return (
+                      <span
+                        title={label}
+                        className={`inline-flex items-center gap-1  py-1 rounded-full text-sm font-medium
+                          ${isLong
+                            ? "bg-gradient-to-r from-trading-success/10 to-transparent text-trading-success "
+                            : "bg-gradient-to-r from-trading-danger/10 to-transparent text-trading-danger "
+                          }`}
+                      >
+                        <span
+                          aria-hidden
+                          className={`flex items-center justify-center w-5 h-5 rounded-full text-xs
+                            ${isLong ? "bg-trading-success/10 text-trading-success" : "bg-trading-danger/10 text-trading-danger"}`}
+                        >
+                          {icon}
+                        </span>
+                        <span className="uppercase tracking-wider">{label}</span>
+                      </span>
+                    );
+                  })()}
                 </td>
 
                 <td className="py-4">${trade.entryPrice}</td>
-                <td className="py-4">${trade.currentPrice || trade.entryPrice}</td>
+                <td className="py-4">
+                  ${Number(trade.currentPrice) > 1
+                    ? Number(trade.currentPrice).toLocaleString(undefined, { maximumFractionDigits: 4, useGrouping: false })
+                    : trade.currentPrice}
+                </td>
 
                 <td className="py-4">
                   <span

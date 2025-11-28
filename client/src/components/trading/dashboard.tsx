@@ -28,7 +28,7 @@ import type { Portfolio, Commodity } from "@shared/schema";
 import { useCommodity } from "@/context/Commoditycontext";
 import Chart from "@/components/trading/stratigy-chart";
 import { BrokerAccounts } from "./BrokerAccount";
-import { useDeltaBalance } from "@/sources/portfolio-source";
+import { useDeltaBalance, useEquityChange } from "@/sources/portfolio-source";
 // import { BrokerAccounts } from "./BrokerAccount";
 import { useActiveTrades } from "@/sources/trades-source";
 import DeltaHistory from "./tradehistory";
@@ -47,6 +47,8 @@ export function Dashboard() {
   // ✅ Global state via context
   const { selectedCommodity, setSelectedCommodity } = useCommodity();
 
+  const { data: equity, isLoading : isLoadingEquity } = useEquityChange();
+
   console.log("Selected Commodity:", selectedCommodity);
 
   const [supportForm, setSupportForm] = useState({
@@ -58,6 +60,8 @@ export function Dashboard() {
 
 
   const { data: deltaBalance } = useDeltaBalance();
+
+  console.log("db ",deltaBalance);
 
   const walletBalance = Number(deltaBalance?.result?.[0]?.balance || 0);
 
@@ -74,6 +78,8 @@ export function Dashboard() {
     setShowSupportModal(false);
     setSupportForm({ name: "", email: "", subject: "Technical Issue", message: "" });
   };
+
+  console.log("pt",equity);
 
   return (
     <div className="flex h-screen flex-col overflow-hidden bg-trading-dark text-white font-inter">
@@ -172,9 +178,9 @@ export function Dashboard() {
                   <h3 className="text-gray-400 text-sm">Portfolio Value</h3>
                   <TrendingUp className="h-4 w-4 text-trading-success" />
                 </div>
-                <div className="text-2xl font-bold text-white mb-1">${walletBalance.toLocaleString()}</div>
+                <div className="text-2xl font-bold text-white mb-1">${(Number(deltaBalance?.meta?.net_equity ?? 0)).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}</div>
                 <div className="text-trading-success text-sm">
-                  <span className="mr-1">↗</span>+{portfolio?.totalPnl || "0.00"}
+                  <span className="mr-1">Available Margin : $</span>{(Number(deltaBalance?.result?.[0]?.available_balance ?? 0)).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}
                 </div>
               </CardContent>
             </Card>
@@ -187,7 +193,9 @@ export function Dashboard() {
                   <Activity className="h-4 w-4 text-trading-info" />
                 </div>
                 <div className="text-2xl font-bold text-white mb-1">{activeTrades.length}</div>
-                <div className="text-trading-info text-sm">Ready to trade</div>
+                <div className="text-trading-info text-sm">
+                  <span className="mr-1">Locked Margin : $</span>{(Number(deltaBalance?.result?.[0]?.blocked_margin ?? 0)).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}
+                </div>
               </CardContent>
             </Card>
 
@@ -195,13 +203,49 @@ export function Dashboard() {
             <Card className="bg-trading-card border-gray-700">
               <CardContent className="pt-6">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-gray-400 text-sm">Today's P&L</h3>
+                  <h3 className="text-gray-400 text-sm">Total Unrealized P&L</h3>
                   <DollarSign className="h-4 w-4 text-trading-success" />
                 </div>
-                <div className="text-2xl font-bold text-white mb-1">${portfolio?.todayPnl || "0.00"}</div>
-                <div className="text-trading-success text-sm">
-                  <span className="mr-1">↗</span>+0.0%
+                <div className={(() => {
+                  const upnl = Number(equity?.result?.upnl ?? 0);
+                  const formatted = Math.abs(upnl).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 3 });
+                  const colorClass = upnl < 0 ? "text-red-400" : "text-trading-success";
+                  return `text-2xl font-bold mb-1 ${colorClass}`;
+                })()}>
+                  {(() => {
+                  const upnl = Number(equity?.result?.upnl ?? 0);
+                  const formatted = Math.abs(upnl).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 3 });
+                  return upnl < 0 ? `-$${formatted}` : `$${formatted}`;
+                  })()}
                 </div>
+                {(() => {
+                  const curr = Number(equity?.result?.curr_ae ?? 0);
+                  const prev = Number(equity?.result?.previous_ae?.[0]?.total_amount_usd ?? 0);
+                  const change = curr === 0 ? 0 : ((curr - prev) * 100) / curr;
+                  const absFormatted = Math.abs(change).toFixed(2);
+
+                  if (change < 0) {
+                  return (
+                    <div className="text-red-400 text-sm">
+                    <span className="mr-1">↘</span>-{absFormatted}%
+                    </div>
+                  );
+                  }
+
+                  if (change === 0) {
+                  return (
+                    <div className="text-gray-400 text-sm">
+                    <span className="mr-1">–</span>0.00%
+                    </div>
+                  );
+                  }
+
+                  return (
+                  <div className="text-trading-success text-sm">
+                    <span className="mr-1">↗</span>+{absFormatted}%
+                  </div>
+                  );
+                })()}
               </CardContent>
             </Card>
 
