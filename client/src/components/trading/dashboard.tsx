@@ -31,6 +31,7 @@ import { BrokerAccounts } from "./BrokerAccount";
 import { useDeltaBalance } from "@/sources/portfolio-source";
 // import { BrokerAccounts } from "./BrokerAccount";
 import { useActiveTrades } from "@/sources/trades-source";
+import DeltaHistory from "./tradehistory";
 
 export function Dashboard() {
   const { user, logout } = useAuth();
@@ -247,7 +248,7 @@ export function Dashboard() {
                 <ActiveTrades activeTrades={activeTrades} isLoading={isLoading} refetch={refetch} />
               </TabsContent>
               <TabsContent value="history" className="p-6">
-                <div className="text-center py-8 text-gray-400">No trade history available</div>
+                <DeltaHistory />
               </TabsContent>
               <TabsContent value="brokers" className="p-6">
 
