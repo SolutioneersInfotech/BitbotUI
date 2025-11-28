@@ -36,7 +36,7 @@ export default function DeltaHistory() {
             setLoading(true);
             setError("");
 
-            const res = await axios.get("http://localhost:3000/api/history/orders", {
+            const res = await axios.get("https://predator-production.up.railway.app/api/history/orders", {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
@@ -54,7 +54,7 @@ export default function DeltaHistory() {
             setLoading(true);
             setError("");
 
-            const res = await axios.get("http://localhost:3000/api/history/fills", {
+            const res = await axios.get("https://predator-production.up.railway.app/api/history/fills", {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
