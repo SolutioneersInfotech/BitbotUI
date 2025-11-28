@@ -300,7 +300,7 @@ export function Dashboard() {
         </main>
 
         {/* Mobile Navigation - Fixed at Bottom */}
-        <div className="lg:hidden flex-shrink-0 bg-trading-card border-t border-gray-700 px-6 py-4">
+        <div className="lg:hidden fixed bottom-0 left-0 w-full bg-trading-card border-t border-gray-700 px-6 py-3 z-50">
           <div className="flex justify-start overflow-x-auto space-x-6 scrollbar-hide">
             <Link href="/" className="flex flex-col items-center text-white">
               <TrendingUp className="h-5 w-5 mb-1" />
