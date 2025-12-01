@@ -11,7 +11,7 @@ const commodityIcons = {
   "NG": Flame,
 };
 
-export function ActiveTrades({activeTrades, isLoading, refetch}:{activeTrades:any, isLoading:boolean, refetch:any}) {
+export function ActiveTrades({ activeTrades, isLoading, refetch }: { activeTrades: any, isLoading: boolean, refetch: any }) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -22,9 +22,12 @@ export function ActiveTrades({activeTrades, isLoading, refetch}:{activeTrades:an
   // ✅ Close Trade Mutation
   const closeTradesMutation = useMutation({
     mutationFn: async (tradeId: string) => {
-      const res = await fetch(`http://localhost:3000/api/trades/${tradeId}/close`, {
-        method: "PATCH",
-      });
+      const res = await fetch(
+        `http://localhost:3000/api/trades/${tradeId}/close?userId=${userId}`,
+        {
+          method: "PATCH",
+        }
+      );
       if (!res.ok) throw new Error("Failed to close trade");
     },
     onSuccess: () => {
@@ -44,6 +47,7 @@ export function ActiveTrades({activeTrades, isLoading, refetch}:{activeTrades:an
     },
   });
 
+
   // ✅ Loading State
   if (isLoading) {
     return (
@@ -53,7 +57,7 @@ export function ActiveTrades({activeTrades, isLoading, refetch}:{activeTrades:an
     );
   }
 
- 
+
 
   // ✅ Empty State
   if (activeTrades.length === 0) {
