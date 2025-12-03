@@ -8,6 +8,11 @@ const defaults: Record<EnvName, { API_BASE_URL: string; AUTH_BASE_URL: string }>
   prod: { API_BASE_URL: 'https://predator-production.up.railway.app/api/', AUTH_BASE_URL: 'https://auth.example.com' }
 };
 
+console.log("312 env in config - ", import.meta.env);
+
+console.log("312 mode in config - ", mode);
+
+
 const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL as string) || defaults[mode].API_BASE_URL;
 const AUTH_BASE_URL = (import.meta.env.VITE_AUTH_BASE_URL as string) || defaults[mode].AUTH_BASE_URL;
 
