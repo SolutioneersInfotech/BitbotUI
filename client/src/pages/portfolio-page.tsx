@@ -8,31 +8,24 @@ import { Link } from "wouter";
 import { ActiveTrades } from "@/components/trading/active-trades";
 import type { Portfolio, Trade } from "@shared/schema";
 import { useDeltaBalance } from "@/sources/portfolio-source";
+import { useActiveTrades } from "@/sources/trades-source";
 
 export default function PortfolioPage() {
   const { data: portfolio } = useQuery<Portfolio>({
     queryKey: ["/api/portfolio"],
   });
 
-  const userId = "68ea1582539ded5dbe090fef";
+  // ✅ Fetch Active Trades for the user
+  const { data: trades, isLoading, refetch } = useActiveTrades();
+  
+  const activeTrades = trades ? trades?.filter((trade) => trade.status === "active") || [] : [];
 
-  const { data: trades } = useQuery<Trade[]>({
-    queryKey: ["/api/trades", userId],
-    queryFn: async () => {
-      const response = await fetch(`https://predator-production.up.railway.app/api/Activetrades?userId=${userId}`);
-      if (!response.ok) throw new Error("Failed to fetch trades");
-      return response.json();
-    },
-    enabled: !!userId,
-  });
+  const closedTrades = trades?.filter(trade => trade.status === 'closed') || [];
+
 
   const { data: deltaBalance } = useDeltaBalance();
 
   const walletBalance = Number(deltaBalance?.result?.[0]?.balance || 0);
-
-  const activeTrades = trades?.filter(trade => trade.status === 'active') || [];
-  const closedTrades = trades?.filter(trade => trade.status === 'closed') || [];
-
   const totalPnL = Number(portfolio?.totalPnl) || 0;
   const todayPnL = Number(portfolio?.todayPnl) || 0;
   const totalValue = Number(portfolio?.totalValue) || 0;
@@ -269,7 +262,7 @@ export default function PortfolioPage() {
                 <CardTitle className="text-lg font-semibold text-white">Active Positions</CardTitle>
               </CardHeader>
               <CardContent>
-                <ActiveTrades />
+                <ActiveTrades activeTrades={activeTrades} isLoading={isLoading} refetch={refetch}/>
               </CardContent>
             </Card>
           </div>
