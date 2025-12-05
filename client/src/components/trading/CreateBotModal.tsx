@@ -28,7 +28,8 @@ export default function CreateBotModal({ onClose, onSuccess }: CreateBotModalPro
   const [loading, setLoading] = useState(false);
 
   const timeframes = [
-    { value: "15m", label: "15 Minutes" },
+    { value: "1m", label: "1 Min" },
+    { value: "15m", label: "15 Min" },
     { value: "1h", label: "1 Hour" },
     { value: "4h", label: "4 Hours" },
     { value: "1d", label: "1 Day" },
@@ -134,14 +135,7 @@ export default function CreateBotModal({ onClose, onSuccess }: CreateBotModalPro
             <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-blue-500 rounded-lg flex items-center justify-center">
               <Bot className="w-5 h-5 text-white" />
             </div>
-            <div>
-              <h2 className="text-xl font-bold text-white">Create Trading Bot</h2>
-              <p className="text-gray-400 text-sm">
-                {step === "strategy" && "Choose strategy and timeframe"}
-                {step === "configuration" && "Configure strategy parameters"}
-                {step === "broker" && "Select a connected broker and symbol"}
-              </p>
-            </div>
+            <h2 className="text-xl font-bold text-white">Create Trading Bot</h2>
           </div>
           <button
             onClick={onClose}
@@ -153,35 +147,50 @@ export default function CreateBotModal({ onClose, onSuccess }: CreateBotModalPro
 
         {/* Body */}
         <div className="p-6">
+          <div>
+              <p className="text-gray-400 mb-8 text-sm">
+                {step === "strategy" && "Choose strategy and timeframe"}
+                {step === "configuration" && "Configure strategy parameters"}
+                {step === "broker" && "Select a connected broker and symbol"}
+              </p>
+            </div>
           {/* Step Indicators */}
-          <div className="flex items-center justify-between mb-8">
-            {(["strategy", "configuration", "broker"] as Step[]).map((s, index) => (
-              <div key={s} className="flex items-center flex-1">
-                <div
-                  className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold ${step === s
-                    ? "bg-emerald-500 text-white"
-                    : index <
-                      (["strategy", "configuration", "broker"] as Step[]).indexOf(
-                        step
-                      )
-                      ? "bg-emerald-500/20 text-emerald-500"
-                      : "bg-gray-800 text-gray-400"
-                    }`}
-                >
-                  {index + 1}
-                </div>
-                {index < 2 && (
+          <div className="w-full mb-8">
+            <div className="flex items-center justify-between w-full">
+
+              {(["strategy", "configuration", "broker"] as Step[]).map((s, index) => (
+                <div key={s} className="flex items-center">
+
+                  {/* Circle */}
                   <div
-                    className={`flex-1 h-1 mx-2 rounded ${index <
-                      (["strategy", "configuration", "broker"] as Step[]).indexOf(step)
-                      ? "bg-emerald-500"
-                      : "bg-gray-800"
+                    className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold
+            ${step === s
+                        ? "bg-emerald-500 text-white"
+                        : index <
+                          (["strategy", "configuration", "broker"] as Step[]).indexOf(step)
+                          ? "bg-emerald-500/20 text-emerald-500"
+                          : "bg-gray-800 text-gray-400"
                       }`}
-                  />
-                )}
-              </div>
-            ))}
+                  >
+                    {index + 1}
+                  </div>
+
+                  {/* Line */}
+                  {index < 2 && (
+                    <div
+                      className={`w-40 h-1 mx-10 rounded
+              ${index <
+                          (["strategy", "configuration", "broker"] as Step[]).indexOf(step)
+                          ? "bg-emerald-500"
+                          : "bg-gray-800"
+                        }`}
+                    />
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
+
 
           {/* Step 1: Strategy */}
           {step === "strategy" && (
@@ -242,7 +251,7 @@ export default function CreateBotModal({ onClose, onSuccess }: CreateBotModalPro
                 <label className="block text-sm font-medium text-gray-400 mb-3">
                   Timeframe *
                 </label>
-                <div className="grid grid-cols-5 gap-2">
+                <div className="grid grid-cols-6 gap-2">
                   {timeframes.map((tf) => (
                     <button
                       key={tf.value}
