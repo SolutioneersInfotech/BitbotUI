@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Plus, Bot, Play, Pause, Trash2, ArrowLeft, Settings, Activity, Zap } from "lucide-react";
 import CreateBotModal from "../components/trading/CreateBotModal";
@@ -6,15 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
 
-interface TradingBot {
-    _id: string; // Updated: MongoDB _id
-    name: string;
-    strategy_type: string;
-    timeframe: string;
-    status: string;
-    created_at: string;
-    configuration: any;
-}
+import { fetchBots, updateBotStatus, deleteBot, Bot as TradingBot } from "../sources/bots-source";
 
 export default function Automation() {
     const [showCreateModal, setShowCreateModal] = useState(false);
@@ -25,13 +16,11 @@ export default function Automation() {
         loadBots();
     }, []);
 
-    // Load bots from backend
     const loadBots = async () => {
         setLoading(true);
         try {
-            const res = await fetch("https://predator-production.up.railway.app/api/bots"); // backend endpoint
-            const data: TradingBot[] = await res.json();
-            setBots(Array.isArray(data) ? data : []); // fallback to empty array
+            const data = await fetchBots();
+            setBots(data);
         } catch (error) {
             console.error("Failed to load bots", error);
             setBots([]);
@@ -39,26 +28,20 @@ export default function Automation() {
         setLoading(false);
     };
 
-    // Toggle bot status
     const toggleBotStatus = async (botId: string, currentStatus: string) => {
-        const newStatus = currentStatus === "active" ? "stopped" : "active";
+        const newStatus = currentStatus === "running" ? "stopped" : "running";
         try {
-            await fetch(`https://predator-production.up.railway.app/api/bots/${botId}/status`, {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ status: newStatus }),
-            });
+            await updateBotStatus(botId, newStatus as "running" | "stopped");
             loadBots();
         } catch (error) {
             console.error("Failed to update bot status", error);
         }
     };
 
-    // Delete bot
-    const deleteBot = async (botId: string) => {
+    const removeBot = async (botId: string) => {
         if (!confirm("Are you sure you want to delete this bot?")) return;
         try {
-            await fetch(`https://predator-production.up.railway.app/api/bots/${botId}`, { method: "DELETE" });
+            await deleteBot(botId);
             loadBots();
         } catch (error) {
             console.error("Failed to delete bot", error);
@@ -76,7 +59,7 @@ export default function Automation() {
 
     return (
         <div className="flex flex-col h-full min-h-0 bg-trading-dark text-white">
-            {/* Header */}
+            
             <div className="bg-trading-card border-b border-gray-700 p-5">
                 <div className="flex items-center justify-between w-full">
                     <div className="flex items-center space-x-4">
@@ -102,8 +85,8 @@ export default function Automation() {
                 </div>
             </div>
 
-            {/* Stats Section */}
             <div className="flex-1 min-h-0 p-6 overflow-y-auto">
+
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                     <Card className="bg-trading-card border-gray-700">
                         <CardContent className="pt-6">
@@ -122,7 +105,7 @@ export default function Automation() {
                                 <Activity className="h-4 w-4 text-emerald-500" />
                             </div>
                             <div className="text-2xl font-bold text-white">
-                                {bots.filter((b) => b.status === "active").length}
+                                {bots.filter((b) => b.status === "running").length}
                             </div>
                         </CardContent>
                     </Card>
@@ -138,7 +121,6 @@ export default function Automation() {
                     </Card>
                 </div>
 
-                {/* Bots List */}
                 {loading ? (
                     <div className="text-center py-12 bg-trading-card rounded-lg border border-gray-700">
                         <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-gray-600 border-t-emerald-500"></div>
@@ -162,10 +144,7 @@ export default function Automation() {
                 ) : (
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                         {bots.map((bot) => (
-                            <div
-                                key={bot._id} // updated
-                                className="bg-trading-card rounded-lg p-6 border border-gray-700 hover:border-gray-600 transition-colors"
-                            >
+                            <div key={bot._id} className="bg-trading-card rounded-lg p-6 border border-gray-700 hover:border-gray-600 transition-colors">
                                 <div className="flex items-start justify-between mb-4">
                                     <div className="flex items-center space-x-3">
                                         <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-blue-500 rounded-lg flex items-center justify-center">
@@ -179,12 +158,13 @@ export default function Automation() {
                                         </div>
                                     </div>
                                     <span
-                                        className={`px-3 py-1 rounded-full text-xs font-medium ${bot.status === "active"
-                                            ? "bg-emerald-500/10 text-emerald-500"
-                                            : bot.status === "error"
+                                        className={`px-3 py-1 rounded-full text-xs font-medium ${
+                                            bot.status === "running"
+                                                ? "bg-emerald-500/10 text-emerald-500"
+                                                : bot.status === "error"
                                                 ? "bg-red-500/10 text-red-500"
                                                 : "bg-gray-800 text-gray-400"
-                                            }`}
+                                        }`}
                                     >
                                         {bot.status.toUpperCase()}
                                     </span>
@@ -208,20 +188,21 @@ export default function Automation() {
                                     <div className="flex justify-between">
                                         <span className="text-gray-400">Created:</span>
                                         <span className="text-white">
-                                            {new Date(bot.created_at).toLocaleDateString()}
+                                            {new Date(bot.createdAt).toLocaleDateString()}
                                         </span>
                                     </div>
                                 </div>
 
                                 <div className="flex items-center space-x-2 pt-4 border-t border-gray-700">
                                     <Button
-                                        onClick={() => toggleBotStatus(bot._id, bot.status)} // updated
-                                        className={`flex-1 ${bot.status === "active"
-                                            ? "bg-red-500/10 text-red-500 hover:bg-red-500/20"
-                                            : "bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20"
-                                            }`}
+                                        onClick={() => toggleBotStatus(bot._id, bot.status)}
+                                        className={`flex-1 ${
+                                            bot.status === "running"
+                                                ? "bg-red-500/10 text-red-500 hover:bg-red-500/20"
+                                                : "bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20"
+                                        }`}
                                     >
-                                        {bot.status === "active" ? (
+                                        {bot.status === "running" ? (
                                             <>
                                                 <Pause className="w-4 h-4 mr-2" /> Stop
                                             </>
@@ -232,7 +213,7 @@ export default function Automation() {
                                         )}
                                     </Button>
                                     <Button
-                                        onClick={() => deleteBot(bot._id)} // updated
+                                        onClick={() => removeBot(bot._id)}
                                         variant="outline"
                                         className="bg-trading-dark border-gray-600 text-gray-400 hover:text-red-500 hover:border-red-500"
                                     >

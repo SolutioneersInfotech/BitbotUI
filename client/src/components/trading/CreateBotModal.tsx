@@ -1,6 +1,7 @@
 
 import { useState, useEffect } from "react";
 import { X, Bot, Code, TrendingUp } from "lucide-react";
+import { createBot } from "@/sources/bots-source";
 
 interface CreateBotModalProps {
   onClose: () => void;
@@ -8,6 +9,7 @@ interface CreateBotModalProps {
 }
 
 type Step = "strategy" | "configuration" | "broker";
+const userId = "68ea1582539ded5dbe090fef";
 
 export default function CreateBotModal({ onClose, onSuccess }: CreateBotModalProps) {
   const [step, setStep] = useState<Step>("strategy");
@@ -102,28 +104,25 @@ export default function CreateBotModal({ onClose, onSuccess }: CreateBotModalPro
           ? { pineScript }
           : {};
 
-    try {
-      const res = await fetch("https://predator-production.up.railway.app/api/bots", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: botName,
-          strategy_type: strategyType,
-          timeframe,
-          configuration,
-          brokerId: selectedBrokerId,
-          symbol,
-        }),
-      });
-      console.log(botName, strategyType, timeframe, configuration, selectedBrokerId, symbol);
 
-      if (!res.ok) throw new Error("Failed to create bot");
+    try {
+      const res = await createBot({
+        userId: userId,
+        name: botName,
+        strategy_type: strategyType,
+        timeframe,
+        configuration,
+        brokerId: selectedBrokerId,
+        symbol,
+        exchange: "delta"
+      });
       onSuccess();
-    } catch (error: any) {
-      alert("Error creating bot: " + error.message);
+    } catch (err: any) {
+      alert("Error creating bot: " + err.message);
     } finally {
       setLoading(false);
     }
+
   };
 
   return (
@@ -148,12 +147,12 @@ export default function CreateBotModal({ onClose, onSuccess }: CreateBotModalPro
         {/* Body */}
         <div className="p-6">
           <div>
-              <p className="text-gray-400 mb-8 text-sm">
-                {step === "strategy" && "Choose strategy and timeframe"}
-                {step === "configuration" && "Configure strategy parameters"}
-                {step === "broker" && "Select a connected broker and symbol"}
-              </p>
-            </div>
+            <p className="text-gray-400 mb-8 text-sm">
+              {step === "strategy" && "Choose strategy and timeframe"}
+              {step === "configuration" && "Configure strategy parameters"}
+              {step === "broker" && "Select a connected broker and symbol"}
+            </p>
+          </div>
           {/* Step Indicators */}
           <div className="w-full mb-8">
             <div className="flex items-center justify-between w-full">
