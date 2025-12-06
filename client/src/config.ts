@@ -4,8 +4,8 @@ const mode = (import.meta.env.VITE_APP_ENV as EnvName) || (import.meta.env.MODE 
 
 const defaults: Record<EnvName, { API_BASE_URL: string; AUTH_BASE_URL: string }> = {
   development: { API_BASE_URL: 'http://localhost:3000/api', AUTH_BASE_URL: 'http://localhost:3000/auth' },
-  lab: { API_BASE_URL: 'https://predator-production.up.railway.app/api/', AUTH_BASE_URL: 'https://lab.api.example.com/auth' },
-  production: { API_BASE_URL: 'https://predator-production.up.railway.app/api/', AUTH_BASE_URL: 'https://auth.example.com' }
+  lab: { API_BASE_URL: 'https://predator-production.up.railway.app/api', AUTH_BASE_URL: 'https://lab.api.example.com/auth' },
+  production: { API_BASE_URL: 'https://predator-production.up.railway.app/api', AUTH_BASE_URL: 'https://auth.example.com' }
 };
 
 
