@@ -128,3 +128,11 @@
 .sidebar-scroll:hover {
   scrollbar-color: #4b5563 transparent; /* firefox show colored thumb on hover */
 }
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-slideDown {
+  animation: slideDown 0.2s ease-out;
+}

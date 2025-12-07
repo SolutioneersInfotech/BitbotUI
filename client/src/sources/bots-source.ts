@@ -1,3 +1,4 @@
+import { TradeLog } from "@/types/bots-trading";
 import { BASE_API_URL as baseURL } from "../config";
 
 export interface CreateBotPayload {
@@ -63,4 +64,23 @@ export async function deleteBot(botId: string) {
 
   if (!res.ok) throw new Error("Failed to delete bot");
   return res.json();
+}
+
+export async function fetchBotTrades(botId: string): Promise<TradeLog[]> {
+  const res = await fetch(`${baseURL}/bots/${botId}/trades`);
+
+  if (!res.ok) throw new Error("Failed to fetch trade history");
+
+  const data = await res.json();
+  return Array.isArray(data) ? data : [];
+}
+
+
+export async function fetchBotPnL(botId: string): Promise<number> {
+  const res = await fetch(`${baseURL}/bots/${botId}/pnl`);
+
+  if (!res.ok) throw new Error("Failed to fetch PnL");
+
+  const data = await res.json();
+  return Number(data.pnl ?? 0);
 }
