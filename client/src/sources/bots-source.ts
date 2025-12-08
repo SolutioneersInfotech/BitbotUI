@@ -72,7 +72,7 @@ export async function fetchBotTrades(botId: string): Promise<TradeLog[]> {
   if (!res.ok) throw new Error("Failed to fetch trade history");
 
   const data = await res.json();
-  return Array.isArray(data) ? data : [];
+  return data?.trades ;
 }
 
 

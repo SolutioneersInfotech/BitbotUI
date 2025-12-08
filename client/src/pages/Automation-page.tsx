@@ -6,6 +6,9 @@ import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
 import { fetchBotPnL, fetchBotTrades } from "../sources/bots-source";
 import { fetchBots, updateBotStatus, deleteBot, Bot as TradingBot } from "../sources/bots-source";
+import useBotWs from "../hooks/useBotWs";
+import BotCard from "@/components/trading/BotCard";
+
 
 export default function Automation() {
     const [showCreateModal, setShowCreateModal] = useState(false);
@@ -50,6 +53,7 @@ export default function Automation() {
 
         try {
             const trades = await fetchBotTrades(botId);
+            console.log("trades=======>",trades);
             setTradeHistory((prev) => ({ ...prev, [botId]: trades }));
         } catch (err) {
             console.error("Failed to load trade history", err);
@@ -184,150 +188,15 @@ export default function Automation() {
                 ) : (
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                         {bots.map((bot) => (
-                            <div key={bot._id} className="bg-trading-card rounded-lg p-6 border border-gray-700 hover:border-gray-600 transition-colors">
-                                <div className="flex items-start justify-between mb-4">
-                                    <div className="flex items-center space-x-3">
-                                        <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-blue-500 rounded-lg flex items-center justify-center">
-                                            <Bot className="w-6 h-6 text-white" />
-                                        </div>
-                                        <div>
-                                            <h3 className="text-white font-semibold">{bot.name}</h3>
-                                            <p className="text-gray-400 text-sm">
-                                                {bot.strategy_type} • {bot.timeframe}
-                                            </p>
-                                        </div>
-                                    </div>
-                                    <span
-                                        className={`px-3 py-1 rounded-full text-xs font-medium ${bot.status === "running"
-                                            ? "bg-emerald-500/10 text-emerald-500"
-                                            : bot.status === "error"
-                                                ? "bg-red-500/10 text-red-500"
-                                                : "bg-gray-800 text-gray-400"
-                                            }`}
-                                    >
-                                        {bot.status.toUpperCase()}
-                                    </span>
-                                </div>
-
-                                <div className="space-y-2 mb-4 text-sm">
-                                    <div className="flex justify-between">
-                                        <span className="text-gray-400">Strategy:</span>
-                                        <span
-                                            className={`px-2 py-1 rounded text-xs font-medium ${getStrategyColor(
-                                                bot.strategy_type
-                                            )}`}
-                                        >
-                                            {bot.strategy_type}
-                                        </span>
-                                    </div>
-                                    <div className="flex justify-between">
-                                        <span className="text-gray-400">Timeframe:</span>
-                                        <span className="text-white">{bot.timeframe}</span>
-                                    </div>
-                                    <div className="flex justify-between">
-                                        <span className="text-gray-400">Created:</span>
-                                        <span className="text-white">
-                                            {new Date(bot.createdAt).toLocaleDateString()}
-                                        </span>
-                                    </div>
-                                    <div className="flex justify-between">
-                                        <span className="text-gray-400">PnL:</span>
-                                        <span
-                                            className={
-                                                botPnL[bot._id] >= 0
-                                                    ? "text-emerald-400 font-semibold"
-                                                    : "text-red-400 font-semibold"
-                                            }
-                                        >
-                                            {botPnL[bot._id]?.toFixed(2)} USDT
-                                        </span>
-                                    </div>
-                                    <div className="pt-3">
-                                        <button
-                                            onClick={() => toggleBotHistoryExpand(bot._id)}
-                                            className="text-sm text-emerald-400 hover:text-emerald-300 transition"
-                                        >
-                                            {expandedBot === bot._id ? "Hide Trade History ▲" : "Show Trade History ▼"}
-                                        </button>
-                                    </div>
-                                    {expandedBot === bot._id && (
-                                        <div className="mt-3 bg-black/30 border border-gray-700 rounded-lg p-4 animate-slideDown">
-                                            {!tradeHistory[bot._id] ? (
-                                                <p className="text-gray-500 text-sm">Loading...</p>
-                                            ) : tradeHistory[bot._id].length === 0 ? (
-                                                <p className="text-gray-500 text-sm">No trades yet.</p>
-                                            ) : (
-                                                <div className="space-y-3 max-h-60 overflow-y-auto pr-2">
-                                                    {tradeHistory[bot._id].map((t, i) => (
-                                                        <div key={i} className="border-b border-gray-700 pb-2">
-                                                            <div className="flex justify-between text-sm">
-                                                                <span className="uppercase font-semibold text-gray-300">
-                                                                    {t.side}
-                                                                </span>
-                                                                <span className="text-xs text-gray-500">
-                                                                    {new Date(t.createdAt).toLocaleString()}
-                                                                </span>
-                                                            </div>
-
-                                                            <div className="flex justify-between mt-1 text-xs text-gray-400">
-                                                                <span>Price:</span>
-                                                                <span className="text-white">{t.price}</span>
-                                                            </div>
-
-                                                            <div className="flex justify-between text-xs text-gray-400">
-                                                                <span>Amount:</span>
-                                                                <span className="text-white">{t.amount}</span>
-                                                            </div>
-
-                                                            {t.pnl !== undefined && (
-                                                                <div className="flex justify-between text-xs">
-                                                                    <span>PnL:</span>
-                                                                    <span
-                                                                        className={
-                                                                            t.pnl >= 0
-                                                                                ? "text-emerald-400"
-                                                                                : "text-red-400"
-                                                                        }
-                                                                    >
-                                                                        {t.pnl.toFixed(2)} USDT
-                                                                    </span>
-                                                                </div>
-                                                            )}
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                            )}
-                                        </div>
-                                    )}
-                                </div>
-
-                                <div className="flex items-center space-x-2 pt-4 border-t border-gray-700">
-                                    <Button
-                                        onClick={() => toggleBotStatus(bot._id, bot.status)}
-                                        className={`flex-1 ${bot.status === "running"
-                                            ? "bg-red-500/10 text-red-500 hover:bg-red-500/20"
-                                            : "bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20"
-                                            }`}
-                                    >
-                                        {bot.status === "running" ? (
-                                            <>
-                                                <Pause className="w-4 h-4 mr-2" /> Stop
-                                            </>
-                                        ) : (
-                                            <>
-                                                <Play className="w-4 h-4 mr-2" /> Start
-                                            </>
-                                        )}
-                                    </Button>
-                                    <Button
-                                        onClick={() => removeBot(bot._id)}
-                                        variant="outline"
-                                        className="bg-trading-dark border-gray-600 text-gray-400 hover:text-red-500 hover:border-red-500"
-                                    >
-                                        <Trash2 className="w-4 h-4" />
-                                    </Button>
-                                </div>
-                            </div>
+                            <BotCard
+                                key={bot._id}
+                                bot={bot}
+                                pnl={botPnL[bot._id] ?? 0}
+                                tradeHistory={tradeHistory[bot._id] ?? []}
+                                loadTradeHistory={() => loadTradeHistory(bot._id)}
+                                onDelete={() => removeBot(bot._id)}
+                                onToggleStatus={() => toggleBotStatus(bot._id, bot.status)}
+                            />
                         ))}
                     </div>
                 )}
