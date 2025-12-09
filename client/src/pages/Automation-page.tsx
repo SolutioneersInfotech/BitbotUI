@@ -14,7 +14,7 @@ export default function Automation() {
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [bots, setBots] = useState<TradingBot[]>([]);
     const [loading, setLoading] = useState(true);
-    const [botPnL, setBotPnL] = useState<Record<string, number>>({});
+    const [botPnL, setBotPnL] = useState<Record<string, any>>({});
     const [tradeHistory, setTradeHistory] = useState<Record<string, any[]>>({});
     const [expandedBot, setExpandedBot] = useState<string | null>(null);
 
@@ -27,7 +27,7 @@ export default function Automation() {
         try {
             const data = await fetchBots();
             setBots(data);
-            const pnls: Record<string, number> = {};
+            const pnls: Record<string, any> = {};
 
             await Promise.all(
                 data.map(async (bot) => {
@@ -40,6 +40,8 @@ export default function Automation() {
             );
 
             setBotPnL(pnls);
+
+            console.log("botpnl debug === ",pnls);
 
         } catch (error) {
             console.error("Failed to load bots", error);
@@ -191,7 +193,7 @@ export default function Automation() {
                             <BotCard
                                 key={bot._id}
                                 bot={bot}
-                                pnl={botPnL[bot._id] ?? 0}
+                                pnl={botPnL[bot._id] ?? {}}
                                 tradeHistory={tradeHistory[bot._id] ?? []}
                                 loadTradeHistory={() => loadTradeHistory(bot._id)}
                                 onDelete={() => removeBot(bot._id)}

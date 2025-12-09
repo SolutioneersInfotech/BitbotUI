@@ -26,7 +26,7 @@ export default function CreateBotModal({ onClose, onSuccess }: CreateBotModalPro
 
   const [brokerAccounts, setBrokerAccounts] = useState<any[]>([]);
   const [selectedBrokerId, setSelectedBrokerId] = useState("");
-  const [symbol, setSymbol] = useState("BTC/USDT");
+  const [symbol, setSymbol] = useState("BTC/USD");
   const [loading, setLoading] = useState(false);
 
   const timeframes = [
@@ -46,9 +46,9 @@ export default function CreateBotModal({ onClose, onSuccess }: CreateBotModalPro
       "DOT/USDT", "LTC/USDT"
     ],
     delta: [
-      "BTC/USDT", "ETH/USDT", "SOL/USDT", "XRP/USDT",
-      "ADA/USDT", "DOGE/USDT", "BNB/USDT", "MATIC/USDT",
-      "DOT/USDT", "LTC/USDT"
+      "BTC/USD", "ETH/USD", "SOL/USD", "XRP/USD",
+      "ADA/USD", "DOGE/USD", "BNB/USD", "MATIC/USD",
+      "DOT/USD", "LTC/USD"
     ]
   };
 

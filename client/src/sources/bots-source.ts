@@ -82,5 +82,6 @@ export async function fetchBotPnL(botId: string): Promise<number> {
   if (!res.ok) throw new Error("Failed to fetch PnL");
 
   const data = await res.json();
-  return Number(data.pnl ?? 0);
+  console.log("data====>>",data);
+  return data ?? {};
 }

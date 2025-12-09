@@ -8,7 +8,7 @@ type Trade = {
     createdAt: string | number | Date;
     price: number;
     amount: number;
-    pnl?: number;
+    pnl?: any;
 };
 
 type BotType = {
@@ -22,7 +22,7 @@ type BotType = {
 
 interface BotCardProps {
     bot: BotType;
-    pnl: number;
+    pnl: any;
     tradeHistory: Trade[];
     loadTradeHistory: () => void;
     onDelete: () => void;
@@ -113,17 +113,17 @@ export default function BotCard({
 
                 {/* Total PnL */}
                 <div className="flex justify-between">
-                    <span className="text-gray-400">Total PnL:</span>
-                    <span className={pnl >= 0 ? "text-emerald-400" : "text-red-400"}>
-                        {pnl.toFixed(2)} USDT
+                    <span className="text-gray-400">Realized PnL:</span>
+                    <span className={pnl.realized.toFixed(2) > 0 ? "text-emerald-400" : pnl.realized.toFixed(2) < 0 ? "text-red-400" : "text-blue-400"}>
+                        {pnl.realized.toFixed(2)} USDT
                     </span>
                 </div>
 
                 {/* Unrealized PnL (LIVE) */}
                 <div className="flex justify-between">
-                    <span className="text-gray-400">Unrealized:</span>
-                    <span className={unrealizedPnl >= 0 ? "text-emerald-400" : "text-red-400"}>
-                        {unrealizedPnl.toFixed(2)} USDT
+                    <span className="text-gray-400">Unrealized PnL:</span>
+                    <span className={pnl.unrealized.toFixed(2) >= 0 ? "text-emerald-400" : "text-red-400"}>
+                        {pnl.unrealized.toFixed(2)} USDT
                     </span>
                 </div>
 
