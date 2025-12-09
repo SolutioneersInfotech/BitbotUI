@@ -129,7 +129,7 @@ export default function BotCard({
 
                 {/* Expand Button */}
                 <button
-                    onClick={() => {setExpanded(!expanded);loadTradeHistory();}}
+                    onClick={() => { setExpanded(!expanded); loadTradeHistory(); }}
                     className="text-sm text-emerald-400 hover:text-emerald-300 transition"
                 >
                     {expanded ? "Hide Trade History ▲" : "Show Trade History ▼"}
@@ -139,40 +139,40 @@ export default function BotCard({
                 {expanded && (
                     <div className="mt-3 bg-black/30 border border-gray-700 rounded-lg p-4 animate-slideDown">
                         {
-                        !tradeHistory ? (
+                            !tradeHistory ? (
                                 <p className="text-gray-500 text-sm">Loading...</p>
                             ) : tradeHistory.length === 0 ? (
                                 <p className="text-gray-500 text-sm">No trades yet</p>
                             ) :
-                        [...liveTrades, ...tradeHistory].map((t, i) => (
-                            
-                                (<div key={i} className="border-b border-gray-700 pb-2 mb-2">
-                                    <div className="flex justify-between">
-                                        <span className="uppercase text-gray-200">{t.side}</span>
-                                        <span className="text-gray-500 text-xs">
-                                            {new Date(t.createdAt).toLocaleString()}
-                                        </span>
-                                    </div>
+                                [...liveTrades, ...tradeHistory].map((t, i) => (
 
-                                    <div className="flex justify-between text-xs text-gray-400">
-                                        <span>Price:</span>
-                                        <span className="text-white">{t.price}</span>
-                                    </div>
-                                    <div className="flex justify-between text-xs text-gray-400">
-                                        <span>Amount:</span>
-                                        <span className="text-white">{t.amount}</span>
-                                    </div>
-
-                                    {t.pnl !== undefined || t.pnl !== null && (
-                                        <div className="flex justify-between text-xs">
-                                            <span>PnL:</span>
-                                            <span className={t.pnl >= 0 ? "text-emerald-400" : "text-red-400"}>
-                                                {t.pnl.toFixed(2)} USDT
+                                    (<div key={i} className="border-b border-gray-700 pb-2 mb-2">
+                                        <div className="flex justify-between">
+                                            <span className="uppercase text-gray-200">{t.side}</span>
+                                            <span className="text-gray-500 text-xs">
+                                                {new Date(t.createdAt).toLocaleString()}
                                             </span>
                                         </div>
-                                    )}
-                                </div>)
-                        ))}
+
+                                        <div className="flex justify-between text-xs text-gray-400">
+                                            <span>Price:</span>
+                                            <span className="text-white">{t.price}</span>
+                                        </div>
+                                        <div className="flex justify-between text-xs text-gray-400">
+                                            <span>Amount:</span>
+                                            <span className="text-white">{t.amount}</span>
+                                        </div>
+
+                                        {t.pnl !== undefined || t.pnl !== null && (
+                                            <div className="flex justify-between text-xs">
+                                                <span>PnL:</span>
+                                                <span className={t.pnl >= 0 ? "text-emerald-400" : "text-red-400"}>
+                                                    {t.pnl.toFixed(2)} USDT
+                                                </span>
+                                            </div>
+                                        )}
+                                    </div>)
+                                ))}
 
                     </div>
                 )}
@@ -180,24 +180,35 @@ export default function BotCard({
             </div>
 
             {/* FOOTER BUTTONS */}
-            <div className="flex items-center space-x-2 pt-4 border-t border-gray-700">
-                <button
-                    onClick={onToggleStatus}
-                    className={`flex-1 py-2 rounded font-bold ${bot.status === "running"
-                        ? "bg-red-500/10 text-red-500 hover:bg-red-500/20"
-                        : "bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20"
-                        }`}
-                >
-                    {bot.status === "running" ? <Pause /> : <Play />}
-                </button>
+            <div className="w-full pt-4 border-t border-gray-700">
+                <div className="flex items-center gap-3">
 
-                <button
-                    onClick={onDelete}
-                    className="p-2 rounded bg-trading-dark border border-gray-600 hover:text-red-500"
-                >
-                    <Trash2 />
-                </button>
+                    {/* PLAY/PAUSE expands fully */}
+                    <button
+                        onClick={onToggleStatus}
+                        className={`flex-1 py-2 rounded font-bold flex items-center justify-center ${bot.status === "running"
+                                ? "bg-red-500/10 text-red-500 hover:bg-red-500/20"
+                                : "bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20"
+                            }`}
+                    >
+                        {bot.status === "running" ? (
+                            <Pause className="w-5 h-5" />
+                        ) : (
+                            <Play className="w-5 h-5" />
+                        )}
+                    </button>
+
+                    {/* Delete icon (fixed size) */}
+                    <button
+                        onClick={onDelete}
+                        className="p-2 rounded bg-trading-dark border border-gray-600 hover:text-red-500"
+                    >
+                        <Trash2 className="w-5 h-5" />
+                    </button>
+
+                </div>
             </div>
+
 
         </div>
     );
