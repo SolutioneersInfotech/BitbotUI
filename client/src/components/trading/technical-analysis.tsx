@@ -1,107 +1,147 @@
-import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import type { TechnicalIndicator } from "@shared/schema";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+  TooltipProvider,
+} from "@/components/ui/tooltip";
 
-export function TechnicalAnalysis() {
-  // Using a default commodity ID for demo purposes
-  const { data: indicators } = useQuery<TechnicalIndicator>({
-    queryKey: ["/api/technical-indicators", "default-gold-id"],
-  });
+function LoadingShimmer() {
+  return (
+    <div className="w-14 h-4 bg-gray-700 rounded animate-pulse" />
+  );
+}
+
+
+function IndicatorRow({
+  label,
+  value,
+  prefix = "",
+  suffix = "",
+  tooltip,
+  loading = false,
+  noArrows = false,
+  colour
+}: {
+  label: string;
+  value: number | string | null | undefined;
+  prefix?: string;
+  suffix?: string;
+  tooltip?: string;
+  loading?: boolean;
+  noArrows?: boolean;
+  colour?: string;
+}) {
+  // Styling based on positive/negative numeric value
+  let color = colour ?? "text-white";
+
+  if(!colour){
+    if (!loading && typeof value === "number") {
+    if (value > 0) color = "text-green-400";
+    else if (value < 0) color = "text-red-400";
+    else color = "text-blue-400";
+  }
+  }
+  
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <div className="flex items-center justify-between cursor-help">
+          <span className="text-gray-400">{label}</span>
+
+          <div className="text-right font-medium flex items-center">
+            {/* SHOW LOADER WHILE FETCHING */}
+            {loading ? (
+              <LoadingShimmer />
+            ) : (
+              <>
+                <span className={color}>
+                  {value !== null && value !== undefined
+                    ? `${prefix}${typeof value === "number" ? value.toFixed(2) : value}${suffix}`
+                    : "--"}
+                </span>
+
+                {!noArrows && typeof value === "number" && (
+                  value > 0 ? (
+                    <span className="text-green-400 ml-1">↑</span>
+                  ) : value < 0 ? (
+                    <span className="text-red-400 ml-1">↓</span>
+                  ) : (
+                    <span className="text-blue-400 ml-1">→</span>
+                  )
+                )}
+              </>
+            )}
+          </div>
+        </div>
+      </TooltipTrigger>
+
+      {tooltip && (
+        <TooltipContent>
+          <p className="text-sm">{tooltip}</p>
+        </TooltipContent>
+      )}
+    </Tooltip>
+  );
+}
+
+function formatMarketCap(value: number | null) {
+  if (!value) return "--";
+
+  if (value >= 1e12) return (value / 1e12).toFixed(2) + " T";
+  if (value >= 1e9) return (value / 1e9).toFixed(2) + " B";
+  if (value >= 1e6) return (value / 1e6).toFixed(2) + " M";
+
+  return value.toFixed(2);
+}
+
+
+export function TechnicalAnalysis({ data: indicators }: { data: any }) {
+  const loading = !indicators; // If null → all fields loading
 
   return (
     <Card className="bg-trading-card border-gray-700">
       <CardHeader>
-        <CardTitle className="text-xl font-semibold text-white">Technical Analysis</CardTitle>
+        <CardTitle className="text-xl font-semibold text-white text-center">
+          Technical Indicators
+        </CardTitle>
       </CardHeader>
+
       <CardContent>
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <span className="text-gray-400">RSI (14)</span>
-            <div className="text-right">
-              <div className="text-trading-warning font-medium" data-testid="indicator-rsi">
-                {indicators?.rsi || "--"}
-              </div>
-              <div className="text-xs text-gray-500">Neutral</div>
-            </div>
-          </div>
-          
-          <div className="flex items-center justify-between">
-            <span className="text-gray-400">MACD</span>
-            <div className="text-right">
-              <div className="text-trading-success font-medium" data-testid="indicator-macd">
-                {indicators?.macd || "--"}
-              </div>
-              <div className="text-xs text-trading-success">Bullish</div>
-            </div>
-          </div>
-          
-          <div className="flex items-center justify-between">
-            <span className="text-gray-400">SMA (50)</span>
-            <div className="text-right">
-              <div className="text-white font-medium" data-testid="indicator-sma">
-                ${indicators?.sma50 || "--"}
-              </div>
-              <div className="text-xs text-gray-500">Support</div>
-            </div>
-          </div>
-          
-          <div className="flex items-center justify-between">
-            <span className="text-gray-400">EMA (20)</span>
-            <div className="text-right">
-              <div className="text-white font-medium" data-testid="indicator-ema">
-                ${indicators?.ema20 || "--"}
-              </div>
-              <div className="text-xs text-trading-success">Above Price</div>
-            </div>
-          </div>
+        <TooltipProvider>
+          <div className="space-y-4">
 
-          {indicators?.signal && (
-            <div className={`mt-6 p-4 rounded-lg border ${
-              indicators.signal === 'BUY' 
-                ? 'bg-trading-success bg-opacity-20 border-trading-success' 
-                : indicators.signal === 'SELL'
-                ? 'bg-trading-danger bg-opacity-20 border-trading-danger'
-                : 'bg-trading-warning bg-opacity-20 border-trading-warning'
-            }`}>
-              <div className="flex items-center justify-between mb-2">
-                <span className={`font-medium ${
-                  indicators.signal === 'BUY' 
-                    ? 'text-trading-success' 
-                    : indicators.signal === 'SELL'
-                    ? 'text-trading-danger'
-                    : 'text-trading-warning'
-                }`} data-testid="trading-signal">
-                  {indicators.signal} Signal
-                </span>
-                <span className={`text-sm ${
-                  indicators.signal === 'BUY' 
-                    ? 'text-trading-success' 
-                    : indicators.signal === 'SELL'
-                    ? 'text-trading-danger'
-                    : 'text-trading-warning'
-                }`} data-testid="signal-confidence">
-                  {indicators.confidence}% Confidence
-                </span>
-              </div>
-              <p className="text-gray-300 text-sm">
-                {indicators.signal === 'BUY' 
-                  ? "Strong bullish momentum detected. Consider entry at current levels."
-                  : indicators.signal === 'SELL'
-                  ? "Bearish signals emerging. Consider taking profits or shorting."
-                  : "Mixed signals detected. Wait for clearer direction."
-                }
-              </p>
-            </div>
-          )}
+            {/* ===== RSI VALUES ===== */}
+            <IndicatorRow label="RSI 1H" value={indicators?.rsi1h} loading={loading} colour={indicators?.rsi1h > 50 ? "text-red-400" : "text-green-400"} noArrows/>
+            <IndicatorRow label="RSI 4H" value={indicators?.rsi4h} loading={loading} colour={indicators?.rsi4h > 50 ? "text-red-400" : "text-green-400"} noArrows/>
+            <IndicatorRow label="RSI 1D" value={indicators?.rsi1d} loading={loading} colour={indicators?.rsi1d > 50 ? "text-red-400" : "text-green-400"} noArrows/>
+            <IndicatorRow label="RSI 1W" value={indicators?.rsi1w} loading={loading} colour={indicators?.rsi1w > 50 ? "text-red-400" : "text-green-400"} noArrows/>
 
-          {!indicators && (
-            <div className="mt-6 p-4 bg-trading-dark rounded-lg border border-gray-600">
-              <p className="text-gray-400 text-sm text-center">
-                No technical analysis data available
-              </p>
-            </div>
-          )}
-        </div>
+            {/* ===== MACD ===== */}
+            <IndicatorRow label="MACD" value={indicators?.macd} loading={loading} noArrows/>
+
+            {/* ===== SMA ===== */}
+            <IndicatorRow label="SMA 50" value={indicators?.sma50} prefix="$" loading={loading} colour="text-blue-400" noArrows/>
+
+            {/* ===== MARKET DATA ===== */}
+            <IndicatorRow label="Price" value={indicators?.price} prefix="$" loading={loading} colour="text-blue-400" noArrows/>
+            <IndicatorRow label="24H High" value={indicators?.high24h} prefix="$" loading={loading} colour="text-green-400" noArrows/>
+            <IndicatorRow label="24H Low" value={indicators?.low24h} prefix="$" loading={loading} colour="text-red-400" noArrows/>
+
+            <IndicatorRow
+              label="Market Cap"
+              value={formatMarketCap(indicators?.marketCap)}
+              loading={loading}
+              noArrows
+            />
+
+            {/* ===== RETURNS ===== */}
+            <IndicatorRow label="200D Return" value={indicators?.twoHundredDaysReturn} suffix="%" loading={loading} />
+            <IndicatorRow label="1Y Return" value={indicators?.oneYearReturn} suffix="%" loading={loading} />
+            <IndicatorRow label="YTD Return" value={indicators?.ytdReturn} suffix="%" loading={loading} />
+
+          </div>
+        </TooltipProvider>
       </CardContent>
     </Card>
   );

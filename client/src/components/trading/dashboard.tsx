@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { Link } from "wouter";
 import { useQuery } from "@tanstack/react-query";
@@ -32,6 +32,7 @@ import { useDeltaBalance, useEquityChange } from "@/sources/portfolio-source";
 // import { BrokerAccounts } from "./BrokerAccount";
 import { useActiveTrades } from "@/sources/trades-source";
 import DeltaHistory from "./tradehistory";
+import { fetchCommodityIndicators } from "@/sources/commodity-source";
 
 export function Dashboard() {
   const { user, logout } = useAuth();
@@ -46,6 +47,7 @@ export function Dashboard() {
 
   // ✅ Global state via context
   const { selectedCommodity, setSelectedCommodity } = useCommodity();
+  const [indicators, setIndicators] = useState<any>(null);
 
   const { data: equity, isLoading : isLoadingEquity } = useEquityChange();
 
@@ -79,7 +81,15 @@ export function Dashboard() {
     setSupportForm({ name: "", email: "", subject: "Technical Issue", message: "" });
   };
 
-  console.log("pt",equity);
+  useEffect(() => {
+  async function loadIndicators() {
+    console.log("debug in useffect selectedCommodity =>>>>>>", selectedCommodity);
+    const data = await fetchCommodityIndicators(selectedCommodity);
+    setIndicators(data);
+    console.log("debug in useffect fetchCommodityIndicators data =>>>>>>", data);
+  }
+  loadIndicators();
+}, [selectedCommodity]);
 
   return (
     <div className="flex h-screen flex-col overflow-hidden bg-trading-dark text-white font-inter">
@@ -263,8 +273,8 @@ export function Dashboard() {
           </div>
 
           {/* Chart and Technical Analysis */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-            <div className="lg:col-span-2">
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-8">
+            <div className="lg:col-span-3">
               <Card className="bg-trading-card border-gray-700 mb-6">
                 {/* ✅ Pass selected commodity */}
                 <Chart symbol={selectedCommodity} />
@@ -272,7 +282,7 @@ export function Dashboard() {
 
             </div>
             <div>
-              <TechnicalAnalysis />
+              <TechnicalAnalysis data={indicators}/>
             </div>
           </div>
 
