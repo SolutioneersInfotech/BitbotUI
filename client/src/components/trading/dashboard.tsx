@@ -48,6 +48,7 @@ export function Dashboard() {
   // ✅ Global state via context
   const { selectedCommodity, setSelectedCommodity } = useCommodity();
   const [indicators, setIndicators] = useState<any>(null);
+  const [loadingIndicators, setLoadingIndicators] = useState<boolean>(true);
 
   const { data: equity, isLoading : isLoadingEquity } = useEquityChange();
 
@@ -82,13 +83,14 @@ export function Dashboard() {
   };
 
   useEffect(() => {
+    setLoadingIndicators(true);
   async function loadIndicators() {
-    console.log("debug in useffect selectedCommodity =>>>>>>", selectedCommodity);
     const data = await fetchCommodityIndicators(selectedCommodity);
     setIndicators(data);
-    console.log("debug in useffect fetchCommodityIndicators data =>>>>>>", data);
+    setLoadingIndicators(false);
   }
   loadIndicators();
+  
 }, [selectedCommodity]);
 
   return (
@@ -282,7 +284,7 @@ export function Dashboard() {
 
             </div>
             <div>
-              <TechnicalAnalysis data={indicators}/>
+              <TechnicalAnalysis data={indicators} loading={loadingIndicators}/>
             </div>
           </div>
 

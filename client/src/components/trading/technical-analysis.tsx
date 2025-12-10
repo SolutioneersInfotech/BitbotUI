@@ -12,7 +12,6 @@ function LoadingShimmer() {
   );
 }
 
-
 function IndicatorRow({
   label,
   value,
@@ -96,8 +95,7 @@ function formatMarketCap(value: number | null) {
 }
 
 
-export function TechnicalAnalysis({ data: indicators }: { data: any }) {
-  const loading = !indicators; // If null → all fields loading
+export function TechnicalAnalysis({ data: indicators, loading }: { data: any, loading:boolean }) {
 
   return (
     <Card className="bg-trading-card border-gray-700">
