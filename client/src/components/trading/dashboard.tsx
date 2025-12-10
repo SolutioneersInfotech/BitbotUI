@@ -10,7 +10,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -22,7 +28,7 @@ import {
   Headphones,
   Menu,
   X,
-  Zap
+  Zap,
 } from "lucide-react";
 import type { Portfolio, Commodity } from "@shared/schema";
 import { useCommodity } from "@/context/Commoditycontext";
@@ -33,6 +39,7 @@ import { useDeltaBalance, useEquityChange } from "@/sources/portfolio-source";
 import { useActiveTrades } from "@/sources/trades-source";
 import DeltaHistory from "./tradehistory";
 import { fetchCommodityIndicators } from "@/sources/commodity-source";
+import usePlatformMetrics from "@/hooks/usePlatformMetrics";
 
 export function Dashboard() {
   const { user, logout } = useAuth();
@@ -43,28 +50,29 @@ export function Dashboard() {
   // ✅ Fetch Active Trades for the user
   const { data: trades, isLoading, refetch } = useActiveTrades();
 
-  const activeTrades = trades ? trades?.filter((trade) => trade.status === "active") || [] : [];
+  const activeTrades = trades
+    ? trades?.filter((trade) => trade.status === "active") || []
+    : [];
 
   // ✅ Global state via context
   const { selectedCommodity, setSelectedCommodity } = useCommodity();
   const [indicators, setIndicators] = useState<any>(null);
   const [loadingIndicators, setLoadingIndicators] = useState<boolean>(true);
 
-  const { data: equity, isLoading : isLoadingEquity } = useEquityChange();
-
-  console.log("Selected Commodity:", selectedCommodity);
+  const { data: equity, isLoading: isLoadingEquity } = useEquityChange();
+  const { data: metrics, loading: loadingPlatformMetrics } =
+    usePlatformMetrics();
 
   const [supportForm, setSupportForm] = useState({
     name: "",
     email: "",
     subject: "Technical Issue",
-    message: ""
+    message: "",
   });
-
 
   const { data: deltaBalance } = useDeltaBalance();
 
-  console.log("db ",deltaBalance);
+  console.log("db ", deltaBalance);
 
   const walletBalance = Number(deltaBalance?.result?.[0]?.balance || 0);
 
@@ -79,19 +87,23 @@ export function Dashboard() {
   const handleSupportSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setShowSupportModal(false);
-    setSupportForm({ name: "", email: "", subject: "Technical Issue", message: "" });
+    setSupportForm({
+      name: "",
+      email: "",
+      subject: "Technical Issue",
+      message: "",
+    });
   };
 
   useEffect(() => {
     setLoadingIndicators(true);
-  async function loadIndicators() {
-    const data = await fetchCommodityIndicators(selectedCommodity);
-    setIndicators(data);
-    setLoadingIndicators(false);
-  }
-  loadIndicators();
-  
-}, [selectedCommodity]);
+    async function loadIndicators() {
+      const data = await fetchCommodityIndicators(selectedCommodity);
+      setIndicators(data);
+      setLoadingIndicators(false);
+    }
+    loadIndicators();
+  }, [selectedCommodity]);
 
   return (
     <div className="flex h-screen flex-col overflow-hidden bg-trading-dark text-white font-inter">
@@ -136,18 +148,51 @@ export function Dashboard() {
               </div>
             </div>
             <div className="hidden md:flex space-x-6">
-              <Link href="/" className="text-white hover:text-trading-success transition-colors">Dashboard</Link>
-              <Link href="/strategies" className="text-gray-400 hover:text-white transition-colors">Strategies</Link>
-              <Link href="/analysis" className="text-gray-400 hover:text-white transition-colors">Analysis</Link>
-              <Link href="/portfolio" className="text-gray-400 hover:text-white transition-colors">Portfolio</Link>
-              <Link href="/expert-picks" className="text-gray-400 hover:text-white transition-colors">Expert Picks</Link>
-              <Link href="/Automation-page" className="text-gray-400 hover:text-white transition-colors">Automation</Link>
+              <Link
+                href="/"
+                className="text-white hover:text-trading-success transition-colors"
+              >
+                Dashboard
+              </Link>
+              <Link
+                href="/strategies"
+                className="text-gray-400 hover:text-white transition-colors"
+              >
+                Strategies
+              </Link>
+              <Link
+                href="/analysis"
+                className="text-gray-400 hover:text-white transition-colors"
+              >
+                Analysis
+              </Link>
+              <Link
+                href="/portfolio"
+                className="text-gray-400 hover:text-white transition-colors"
+              >
+                Portfolio
+              </Link>
+              <Link
+                href="/expert-picks"
+                className="text-gray-400 hover:text-white transition-colors"
+              >
+                Expert Picks
+              </Link>
+              <Link
+                href="/Automation-page"
+                className="text-gray-400 hover:text-white transition-colors"
+              >
+                Automation
+              </Link>
             </div>
           </div>
           <div className="flex items-center space-x-4">
             <div className="hidden md:flex items-center space-x-2 bg-trading-dark px-3 py-2 rounded-lg">
               <Wallet className="h-4 w-4 text-trading-success" />
-              <span className="text-white font-medium" data-testid="text-portfolio-balance">
+              <span
+                className="text-white font-medium"
+                data-testid="text-portfolio-balance"
+              >
                 ${Number(equity?.result?.curr_ae ?? 0).toFixed(2)}
               </span>
             </div>
@@ -190,9 +235,21 @@ export function Dashboard() {
                   <h3 className="text-gray-400 text-sm">Portfolio Value</h3>
                   <TrendingUp className="h-4 w-4 text-trading-success" />
                 </div>
-                <div className="text-2xl font-bold text-white mb-1">${(Number(deltaBalance?.meta?.net_equity ?? 0)).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}</div>
+                <div className="text-2xl font-bold text-white mb-1">
+                  $
+                  {Number(deltaBalance?.meta?.net_equity ?? 0).toLocaleString(
+                    undefined,
+                    { minimumFractionDigits: 0, maximumFractionDigits: 2 }
+                  )}
+                </div>
                 <div className="text-trading-success text-sm">
-                  <span className="mr-1">Available Margin : $</span>{(Number(deltaBalance?.result?.[0]?.available_balance ?? 0)).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}
+                  <span className="mr-1">Available Margin : $</span>
+                  {Number(
+                    deltaBalance?.result?.[0]?.available_balance ?? 0
+                  ).toLocaleString(undefined, {
+                    minimumFractionDigits: 0,
+                    maximumFractionDigits: 2,
+                  })}
                 </div>
               </CardContent>
             </Card>
@@ -204,9 +261,17 @@ export function Dashboard() {
                   <h3 className="text-gray-400 text-sm">Active Trades</h3>
                   <Activity className="h-4 w-4 text-trading-info" />
                 </div>
-                <div className="text-2xl font-bold text-white mb-1">{activeTrades.length}</div>
+                <div className="text-2xl font-bold text-white mb-1">
+                  {activeTrades.length}
+                </div>
                 <div className="text-trading-info text-sm">
-                  <span className="mr-1">Locked Margin : $</span>{(Number(deltaBalance?.result?.[0]?.blocked_margin ?? 0)).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}
+                  <span className="mr-1">Locked Margin : $</span>
+                  {Number(
+                    deltaBalance?.result?.[0]?.blocked_margin ?? 0
+                  ).toLocaleString(undefined, {
+                    minimumFractionDigits: 0,
+                    maximumFractionDigits: 2,
+                  })}
                 </div>
               </CardContent>
             </Card>
@@ -215,47 +280,60 @@ export function Dashboard() {
             <Card className="bg-trading-card border-gray-700">
               <CardContent className="pt-6">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-gray-400 text-sm">Total Unrealized P&L</h3>
+                  <h3 className="text-gray-400 text-sm">
+                    Total Unrealized P&L
+                  </h3>
                   <DollarSign className="h-4 w-4 text-trading-success" />
                 </div>
-                <div className={(() => {
-                  const upnl = Number(equity?.result?.upnl ?? 0);
-                  const formatted = Math.abs(upnl).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 3 });
-                  const colorClass = upnl < 0 ? "text-red-400" : "text-trading-success";
-                  return `text-2xl font-bold mb-1 ${colorClass}`;
-                })()}>
+                <div
+                  className={(() => {
+                    const upnl = Number(equity?.result?.upnl ?? 0);
+                    const formatted = Math.abs(upnl).toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 3,
+                    });
+                    const colorClass =
+                      upnl < 0 ? "text-red-400" : "text-trading-success";
+                    return `text-2xl font-bold mb-1 ${colorClass}`;
+                  })()}
+                >
                   {(() => {
-                  const upnl = Number(equity?.result?.upnl ?? 0);
-                  const formatted = Math.abs(upnl).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 3 });
-                  return upnl < 0 ? `-$${formatted}` : `$${formatted}`;
+                    const upnl = Number(equity?.result?.upnl ?? 0);
+                    const formatted = Math.abs(upnl).toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 3,
+                    });
+                    return upnl < 0 ? `-$${formatted}` : `$${formatted}`;
                   })()}
                 </div>
                 {(() => {
                   const curr = Number(equity?.result?.curr_ae ?? 0);
-                  const prev = Number(equity?.result?.previous_ae?.[0]?.total_amount_usd ?? 0);
+                  const prev = Number(
+                    equity?.result?.previous_ae?.[0]?.total_amount_usd ?? 0
+                  );
                   const change = curr === 0 ? 0 : ((curr - prev) * 100) / curr;
                   const absFormatted = Math.abs(change).toFixed(2);
 
                   if (change < 0) {
-                  return (
-                    <div className="text-red-400 text-sm">
-                    <span className="mr-1">↘</span>-{absFormatted}%
-                    </div>
-                  );
+                    return (
+                      <div className="text-red-400 text-sm">
+                        <span className="mr-1">↘</span>-{absFormatted}%
+                      </div>
+                    );
                   }
 
                   if (change === 0) {
-                  return (
-                    <div className="text-gray-400 text-sm">
-                    <span className="mr-1">–</span>0.00%
-                    </div>
-                  );
+                    return (
+                      <div className="text-gray-400 text-sm">
+                        <span className="mr-1">–</span>0.00%
+                      </div>
+                    );
                   }
 
                   return (
-                  <div className="text-trading-success text-sm">
-                    <span className="mr-1">↗</span>+{absFormatted}%
-                  </div>
+                    <div className="text-trading-success text-sm">
+                      <span className="mr-1">↗</span>+{absFormatted}%
+                    </div>
                   );
                 })()}
               </CardContent>
@@ -268,8 +346,8 @@ export function Dashboard() {
                   <h3 className="text-gray-400 text-sm">Win Rate</h3>
                   <Target className="h-4 w-4 text-trading-warning" />
                 </div>
-                <div className="text-2xl font-bold text-white mb-1">0%</div>
-                <div className="text-gray-400 text-sm">No trades yet</div>
+                <div className="text-2xl font-bold text-white mb-1">{((metrics as any)?.winRate*100).toFixed(1)}%</div>
+                <div className="text-gray-400 text-sm">{(metrics as any)?.lifetimeTrades} trades yet</div>
               </CardContent>
             </Card>
           </div>
@@ -281,10 +359,12 @@ export function Dashboard() {
                 {/* ✅ Pass selected commodity */}
                 <Chart symbol={selectedCommodity} />
               </Card>
-
             </div>
             <div>
-              <TechnicalAnalysis data={indicators} loading={loadingIndicators}/>
+              <TechnicalAnalysis
+                data={indicators}
+                loading={loadingIndicators}
+              />
             </div>
           </div>
 
@@ -301,30 +381,42 @@ export function Dashboard() {
               </div>
 
               <TabsContent value="trades" className="p-6">
-                <ActiveTrades activeTrades={activeTrades} isLoading={isLoading} refetch={refetch} />
+                <ActiveTrades
+                  activeTrades={activeTrades}
+                  isLoading={isLoading}
+                  refetch={refetch}
+                />
               </TabsContent>
               <TabsContent value="history" className="p-6">
                 <DeltaHistory />
               </TabsContent>
               <TabsContent value="brokers" className="p-6">
-
                 <BrokerAccounts />
-
-
               </TabsContent>
               <TabsContent value="subscription" className="p-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {/* Free Plan */}
                   <Card className="bg-trading-dark border-gray-700">
-                    <CardHeader><CardTitle className="text-white">Free Tier</CardTitle></CardHeader>
+                    <CardHeader>
+                      <CardTitle className="text-white">Free Tier</CardTitle>
+                    </CardHeader>
                     <CardContent>
-                      <div className="text-3xl font-bold text-white mb-4">$0<span className="text-base text-gray-400">/month</span></div>
+                      <div className="text-3xl font-bold text-white mb-4">
+                        $0
+                        <span className="text-base text-gray-400">/month</span>
+                      </div>
                       <ul className="space-y-2 text-gray-300">
                         <li>• Basic market data</li>
                         <li>• 5 active trades</li>
                         <li>• Standard indicators</li>
                       </ul>
-                      <Button variant="outline" className="w-full mt-6" disabled>Current Plan</Button>
+                      <Button
+                        variant="outline"
+                        className="w-full mt-6"
+                        disabled
+                      >
+                        Current Plan
+                      </Button>
                     </CardContent>
                   </Card>
 
@@ -333,11 +425,16 @@ export function Dashboard() {
                     <CardHeader>
                       <CardTitle className="text-white flex items-center justify-between">
                         Pro Tier
-                        <span className="bg-trading-warning text-black px-2 py-1 rounded text-xs">RECOMMENDED</span>
+                        <span className="bg-trading-warning text-black px-2 py-1 rounded text-xs">
+                          RECOMMENDED
+                        </span>
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
-                      <div className="text-3xl font-bold text-white mb-4">$49<span className="text-base text-gray-200">/month</span></div>
+                      <div className="text-3xl font-bold text-white mb-4">
+                        $49
+                        <span className="text-base text-gray-200">/month</span>
+                      </div>
                       <ul className="space-y-2 text-white">
                         <li>• Real-time market data</li>
                         <li>• Unlimited active trades</li>
@@ -345,7 +442,10 @@ export function Dashboard() {
                         <li>• Advanced AI recommendations</li>
                         <li>• 24/7 priority support</li>
                       </ul>
-                      <Button className="w-full mt-6 bg-white hover:bg-gray-100 text-gray-900" onClick={() => setShowSubscriptionModal(true)}>
+                      <Button
+                        className="w-full mt-6 bg-white hover:bg-gray-100 text-gray-900"
+                        onClick={() => setShowSubscriptionModal(true)}
+                      >
                         Upgrade to Pro
                       </Button>
                     </CardContent>
@@ -363,27 +463,45 @@ export function Dashboard() {
               <TrendingUp className="h-5 w-5 mb-1" />
               <span className="text-xs">Dashboard</span>
             </Link>
-            <Link href="/strategies" className="flex flex-col items-center text-gray-400">
+            <Link
+              href="/strategies"
+              className="flex flex-col items-center text-gray-400"
+            >
               <Target className="h-5 w-5 mb-1" />
               <span className="text-xs">Strategies</span>
             </Link>
-            <Link href="/analysis" className="flex flex-col items-center text-gray-400">
+            <Link
+              href="/analysis"
+              className="flex flex-col items-center text-gray-400"
+            >
               <Activity className="h-5 w-5 mb-1" />
               <span className="text-xs">Analysis</span>
             </Link>
-            <Link href="/portfolio" className="flex flex-col items-center text-gray-400">
+            <Link
+              href="/portfolio"
+              className="flex flex-col items-center text-gray-400"
+            >
               <Wallet className="h-5 w-5 mb-1" />
               <span className="text-xs">Portfolio</span>
             </Link>
-            <Link href="/expert-picks" className="flex flex-col items-center text-gray-400">
+            <Link
+              href="/expert-picks"
+              className="flex flex-col items-center text-gray-400"
+            >
               <Zap className="h-5 w-5 mb-1" />
               <span className="text-xs">Picks</span>
             </Link>
-            <Link href="/Automation-page" className="flex flex-col items-center text-gray-400">
+            <Link
+              href="/Automation-page"
+              className="flex flex-col items-center text-gray-400"
+            >
               <Zap className="h-5 w-5 mb-1" />
               <span className="text-xs">Automation</span>
             </Link>
-            <button onClick={() => setShowSupportModal(true)} className="flex flex-col items-center text-gray-400">
+            <button
+              onClick={() => setShowSupportModal(true)}
+              className="flex flex-col items-center text-gray-400"
+            >
               <Headphones className="h-5 w-5 mb-1" />
               <span className="text-xs">Support</span>
             </button>
@@ -392,59 +510,116 @@ export function Dashboard() {
       </div>
 
       {/* Subscription Modal */}
-      <Modal isOpen={showSubscriptionModal} onClose={() => setShowSubscriptionModal(false)}>
+      <Modal
+        isOpen={showSubscriptionModal}
+        onClose={() => setShowSubscriptionModal(false)}
+      >
         <div className="p-6">
           <h2 className="text-2xl font-bold text-white mb-4">Upgrade to Pro</h2>
-          <p className="text-gray-400 mb-6">Unlock advanced features and maximize your trading potential</p>
+          <p className="text-gray-400 mb-6">
+            Unlock advanced features and maximize your trading potential
+          </p>
           <div className="space-y-4">
-            <p className="text-white">Coming soon! Payment processing will be implemented.</p>
-            <Button onClick={() => setShowSubscriptionModal(false)} className="w-full">Close</Button>
+            <p className="text-white">
+              Coming soon! Payment processing will be implemented.
+            </p>
+            <Button
+              onClick={() => setShowSubscriptionModal(false)}
+              className="w-full"
+            >
+              Close
+            </Button>
           </div>
         </div>
       </Modal>
 
       {/* Support Modal */}
-      <Modal isOpen={showSupportModal} onClose={() => setShowSupportModal(false)}>
+      <Modal
+        isOpen={showSupportModal}
+        onClose={() => setShowSupportModal(false)}
+      >
         <div className="p-6">
-          <h2 className="text-2xl font-bold text-white mb-4">Contact Support</h2>
-          <p className="text-gray-400 mb-6">Get help from our trading experts</p>
+          <h2 className="text-2xl font-bold text-white mb-4">
+            Contact Support
+          </h2>
+          <p className="text-gray-400 mb-6">
+            Get help from our trading experts
+          </p>
           <form onSubmit={handleSupportSubmit} className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <Label className="text-gray-300">Name</Label>
-                <Input value={supportForm.name} onChange={(e) => setSupportForm({ ...supportForm, name: e.target.value })} className="bg-trading-dark border-gray-600 text-white" placeholder="Your name" required />
+                <Input
+                  value={supportForm.name}
+                  onChange={(e) =>
+                    setSupportForm({ ...supportForm, name: e.target.value })
+                  }
+                  className="bg-trading-dark border-gray-600 text-white"
+                  placeholder="Your name"
+                  required
+                />
               </div>
               <div>
                 <Label className="text-gray-300">Email</Label>
-                <Input type="email" value={supportForm.email} onChange={(e) => setSupportForm({ ...supportForm, email: e.target.value })} className="bg-trading-dark border-gray-600 text-white" placeholder="Your email" required />
+                <Input
+                  type="email"
+                  value={supportForm.email}
+                  onChange={(e) =>
+                    setSupportForm({ ...supportForm, email: e.target.value })
+                  }
+                  className="bg-trading-dark border-gray-600 text-white"
+                  placeholder="Your email"
+                  required
+                />
               </div>
             </div>
             <div>
               <Label className="text-gray-300">Subject</Label>
-              <Select value={supportForm.subject} onValueChange={(value) => setSupportForm({ ...supportForm, subject: value })}>
-                <SelectTrigger className="bg-trading-dark border-gray-600 text-white"><SelectValue /></SelectTrigger>
+              <Select
+                value={supportForm.subject}
+                onValueChange={(value) =>
+                  setSupportForm({ ...supportForm, subject: value })
+                }
+              >
+                <SelectTrigger className="bg-trading-dark border-gray-600 text-white">
+                  <SelectValue />
+                </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="Technical Issue">Technical Issue</SelectItem>
-                  <SelectItem value="Account Question">Account Question</SelectItem>
-                  <SelectItem value="Trading Strategy Help">Trading Strategy Help</SelectItem>
-                  <SelectItem value="Billing Question">Billing Question</SelectItem>
+                  <SelectItem value="Technical Issue">
+                    Technical Issue
+                  </SelectItem>
+                  <SelectItem value="Account Question">
+                    Account Question
+                  </SelectItem>
+                  <SelectItem value="Trading Strategy Help">
+                    Trading Strategy Help
+                  </SelectItem>
+                  <SelectItem value="Billing Question">
+                    Billing Question
+                  </SelectItem>
                   <SelectItem value="Other">Other</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             <div>
               <Label className="text-gray-300">Message</Label>
-              <Textarea value={supportForm.message} onChange={(e) => setSupportForm({ ...supportForm, message: e.target.value })} className="bg-trading-dark border-gray-600 text-white" placeholder="Describe your question or issue..." rows={4} required />
+              <Textarea
+                value={supportForm.message}
+                onChange={(e) =>
+                  setSupportForm({ ...supportForm, message: e.target.value })
+                }
+                className="bg-trading-dark border-gray-600 text-white"
+                placeholder="Describe your question or issue..."
+                rows={4}
+                required
+              />
             </div>
-            <Button type="submit" className="w-full">Submit Request</Button>
+            <Button type="submit" className="w-full">
+              Submit Request
+            </Button>
           </form>
         </div>
       </Modal>
     </div>
   );
 }
-
-
-
-
-
