@@ -110,10 +110,10 @@ export function TechnicalAnalysis({ data: indicators, loading }: { data: any, lo
           <div className="space-y-4">
 
             {/* ===== RSI VALUES ===== */}
-            <IndicatorRow label="RSI 1H" value={indicators?.rsi1h} loading={loading} colour={indicators?.rsi1h > 50 ? "text-red-400" : "text-green-400"} noArrows/>
-            <IndicatorRow label="RSI 4H" value={indicators?.rsi4h} loading={loading} colour={indicators?.rsi4h > 50 ? "text-red-400" : "text-green-400"} noArrows/>
-            <IndicatorRow label="RSI 1D" value={indicators?.rsi1d} loading={loading} colour={indicators?.rsi1d > 50 ? "text-red-400" : "text-green-400"} noArrows/>
-            <IndicatorRow label="RSI 1W" value={indicators?.rsi1w} loading={loading} colour={indicators?.rsi1w > 50 ? "text-red-400" : "text-green-400"} noArrows/>
+            <IndicatorRow label="RSI 1H" tooltip="RSI > 70 indicates overbought while RSI < 30 indicates oversold" value={indicators?.rsi1h} loading={loading} colour={indicators?.rsi1h > 50 ? "text-red-400" : "text-green-400"} noArrows/>
+            <IndicatorRow label="RSI 4H"  tooltip="RSI > 70 indicates overbought while RSI < 30 indicates oversold" value={indicators?.rsi4h} loading={loading} colour={indicators?.rsi4h > 50 ? "text-red-400" : "text-green-400"} noArrows/>
+            <IndicatorRow label="RSI 1D" tooltip="RSI > 70 indicates overbought while RSI < 30 indicates oversold" value={indicators?.rsi1d} loading={loading} colour={indicators?.rsi1d > 50 ? "text-red-400" : "text-green-400"} noArrows/>
+            <IndicatorRow label="RSI 1W" tooltip="RSI > 70 indicates overbought while RSI < 30 indicates oversold" value={indicators?.rsi1w} loading={loading} colour={indicators?.rsi1w > 50 ? "text-red-400" : "text-green-400"} noArrows/>
 
             {/* ===== MACD ===== */}
             <IndicatorRow label="MACD" value={indicators?.macd} loading={loading} noArrows/>
