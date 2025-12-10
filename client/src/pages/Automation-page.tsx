@@ -41,7 +41,7 @@ export default function Automation() {
 
             setBotPnL(pnls);
 
-            console.log("botpnl debug === ",pnls);
+            console.log("botpnl debug === ", pnls);
 
         } catch (error) {
             console.error("Failed to load bots", error);
@@ -55,7 +55,7 @@ export default function Automation() {
 
         try {
             const trades = await fetchBotTrades(botId);
-            console.log("trades=======>",trades);
+            console.log("trades=======>", trades);
             setTradeHistory((prev) => ({ ...prev, [botId]: trades }));
         } catch (err) {
             console.error("Failed to load trade history", err);
@@ -103,6 +103,16 @@ export default function Automation() {
         return colors[strategy] || "text-gray-500 bg-gray-800";
     };
 
+    const activeBots = bots.filter((b) => b.status === "running");
+
+    const activeBotsPnL = activeBots.reduce((total, bot) => {
+        const pnl = botPnL[bot._id] || {};
+        const realized = Number(pnl.realized || 0);
+        const unrealized = Number(pnl.unrealized || 0);
+        return total + realized + unrealized;
+    }, 0);
+
+
     return (
         <div className="flex flex-col h-full min-h-0 bg-trading-dark text-white">
 
@@ -133,7 +143,7 @@ export default function Automation() {
 
             <div className="flex-1 min-h-0 p-6 overflow-y-auto">
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
                     <Card className="bg-trading-card border-gray-700">
                         <CardContent className="pt-6">
                             <div className="flex items-center justify-between mb-4">
@@ -152,6 +162,25 @@ export default function Automation() {
                             </div>
                             <div className="text-2xl font-bold text-white">
                                 {bots.filter((b) => b.status === "running").length}
+                            </div>
+                        </CardContent>
+                    </Card>
+                    <Card className="bg-trading-card border-gray-700">
+                        <CardContent className="pt-6">
+                            <div className="flex items-center justify-between mb-4">
+                                <h3 className="text-gray-400 text-sm">Aggregate Active PnL</h3>
+                                <Activity className="h-4 w-4 text-purple-400" />
+                            </div>
+
+                            <div
+                                className={`text-2xl font-bold ${activeBotsPnL > 0
+                                        ? "text-emerald-500"
+                                        : activeBotsPnL < 0
+                                            ? "text-red-500"
+                                            : "text-gray-300"
+                                    }`}
+                            >
+                                {activeBotsPnL.toFixed(2)} USDT
                             </div>
                         </CardContent>
                     </Card>
