@@ -2,8 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 
   const userId = "68ea1582539ded5dbe090fef";
 
-  const baseURL = "http://localhost:3000/api";
-
+import { BASE_API_URL as baseURL } from "../config";
 
 export function useDeltaBalance() {
   return useQuery({
