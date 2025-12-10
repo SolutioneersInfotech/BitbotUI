@@ -148,7 +148,7 @@ export function Dashboard() {
             <div className="hidden md:flex items-center space-x-2 bg-trading-dark px-3 py-2 rounded-lg">
               <Wallet className="h-4 w-4 text-trading-success" />
               <span className="text-white font-medium" data-testid="text-portfolio-balance">
-                ${walletBalance.toLocaleString()}
+                ${Number(equity?.result?.curr_ae ?? 0).toFixed(2)}
               </span>
             </div>
             <Button
