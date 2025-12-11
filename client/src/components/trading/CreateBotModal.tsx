@@ -1,7 +1,8 @@
-
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { X, Bot, Code, TrendingUp } from "lucide-react";
 import { createBot } from "@/sources/bots-source";
+import * as Select from "@radix-ui/react-select";
+import { Check, ChevronDown } from "lucide-react";
 
 interface CreateBotModalProps {
   onClose: () => void;
@@ -11,7 +12,10 @@ interface CreateBotModalProps {
 type Step = "strategy" | "configuration" | "broker";
 const userId = "68ea1582539ded5dbe090fef";
 
-export default function CreateBotModal({ onClose, onSuccess }: CreateBotModalProps) {
+export default function CreateBotModal({
+  onClose,
+  onSuccess,
+}: CreateBotModalProps) {
   const [step, setStep] = useState<Step>("strategy");
   const [botName, setBotName] = useState("");
   const [strategyType, setStrategyType] = useState<"RSI" | "Custom" | "">("");
@@ -21,7 +25,7 @@ export default function CreateBotModal({ onClose, onSuccess }: CreateBotModalPro
     oversold: "30",
     overbought: "70",
     period: "14",
-    quantity: "0.01", // 🔹 Default quantity
+    quantity: "1", // 🔹 Default quantity
   });
 
   const [brokerAccounts, setBrokerAccounts] = useState<any[]>([]);
@@ -41,15 +45,29 @@ export default function CreateBotModal({ onClose, onSuccess }: CreateBotModalPro
   // 🔹 Multi-exchange symbol map
   const symbolMap: Record<string, string[]> = {
     binance: [
-      "BTC/USDT", "ETH/USDT", "SOL/USDT", "XRP/USDT",
-      "ADA/USDT", "DOGE/USDT", "BNB/USDT", "MATIC/USDT",
-      "DOT/USDT", "LTC/USDT"
+      "BTC/USDT",
+      "ETH/USDT",
+      "SOL/USDT",
+      "XRP/USDT",
+      "ADA/USDT",
+      "DOGE/USDT",
+      "BNB/USDT",
+      "MATIC/USDT",
+      "DOT/USDT",
+      "LTC/USDT",
     ],
     delta: [
-      "BTC/USD", "ETH/USD", "SOL/USD", "XRP/USD",
-      "ADA/USD", "DOGE/USD", "BNB/USD", "MATIC/USD",
-      "DOT/USD", "LTC/USD"
-    ]
+      "BTC/USD",
+      "ETH/USD",
+      "SOL/USD",
+      "XRP/USD",
+      "ADA/USD",
+      "DOGE/USD",
+      "BNB/USD",
+      "MATIC/USD",
+      "DOT/USD",
+      "LTC/USD",
+    ],
   };
 
   // 🔹 Fetch connected brokers from backend
@@ -57,12 +75,15 @@ export default function CreateBotModal({ onClose, onSuccess }: CreateBotModalPro
     async function fetchBrokers() {
       try {
         const token = localStorage.getItem("token");
-        const res = await fetch("https://predator-production.up.railway.app/api/exchange/list", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        });
+        const res = await fetch(
+          "https://predator-production.up.railway.app/api/exchange/list",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
         if (!res.ok) throw new Error("Failed to fetch brokers");
         const data = await res.json();
         setBrokerAccounts(data);
@@ -90,7 +111,13 @@ export default function CreateBotModal({ onClose, onSuccess }: CreateBotModalPro
   };
 
   const handleCreateBot = async () => {
-    if (!botName || !strategyType || !timeframe || !selectedBrokerId || !symbol) {
+    if (
+      !botName ||
+      !strategyType ||
+      !timeframe ||
+      !selectedBrokerId ||
+      !symbol
+    ) {
       alert("Please fill in all required fields");
       return;
     }
@@ -104,7 +131,6 @@ export default function CreateBotModal({ onClose, onSuccess }: CreateBotModalPro
           ? { pineScript }
           : {};
 
-
     try {
       const res = await createBot({
         userId: userId,
@@ -114,7 +140,7 @@ export default function CreateBotModal({ onClose, onSuccess }: CreateBotModalPro
         configuration,
         brokerId: selectedBrokerId,
         symbol,
-        exchange: "delta"
+        exchange: "delta",
       });
       onSuccess();
     } catch (err: any) {
@@ -122,12 +148,22 @@ export default function CreateBotModal({ onClose, onSuccess }: CreateBotModalPro
     } finally {
       setLoading(false);
     }
-
   };
 
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const [triggerWidth, setTriggerWidth] = useState<number>(600);
+
+  function updateTriggerWidth() {
+    if (triggerRef.current) {
+      const width = triggerRef.current.getBoundingClientRect().width;
+      setTriggerWidth(width);
+    }
+  }
+
+
   return (
-    <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
-      <div className="bg-[#12141a] border border-gray-800 rounded-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-black/80 flex items-center justify-center p-4">
+      <div className="bg-[#12141a] border border-gray-800 rounded-lg w-full max-w-2xl flex flex-col ">
         {/* Header */}
         <div className="sticky top-0 bg-[#12141a] border-b border-gray-800 p-6 flex items-center justify-between">
           <div className="flex items-center space-x-3">
@@ -145,7 +181,7 @@ export default function CreateBotModal({ onClose, onSuccess }: CreateBotModalPro
         </div>
 
         {/* Body */}
-        <div className="p-6">
+        <div className="p-6 flex-1 overflow-y-auto">
           <div>
             <p className="text-gray-400 mb-8 text-sm">
               {step === "strategy" && "Choose strategy and timeframe"}
@@ -156,40 +192,43 @@ export default function CreateBotModal({ onClose, onSuccess }: CreateBotModalPro
           {/* Step Indicators */}
           <div className="w-full mb-8">
             <div className="flex items-center justify-between w-full">
-
-              {(["strategy", "configuration", "broker"] as Step[]).map((s, index) => (
-                <div key={s} className="flex items-center">
-
-                  {/* Circle */}
-                  <div
-                    className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold
-            ${step === s
-                        ? "bg-emerald-500 text-white"
-                        : index <
-                          (["strategy", "configuration", "broker"] as Step[]).indexOf(step)
-                          ? "bg-emerald-500/20 text-emerald-500"
-                          : "bg-gray-800 text-gray-400"
-                      }`}
-                  >
-                    {index + 1}
-                  </div>
-
-                  {/* Line */}
-                  {index < 2 && (
+              {(["strategy", "configuration", "broker"] as Step[]).map(
+                (s, index) => (
+                  <div key={s} className="flex items-center">
+                    {/* Circle */}
                     <div
-                      className={`w-40 h-1 mx-10 rounded
-              ${index <
-                          (["strategy", "configuration", "broker"] as Step[]).indexOf(step)
-                          ? "bg-emerald-500"
-                          : "bg-gray-800"
+                      className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold
+            ${step === s
+                          ? "bg-emerald-500 text-white"
+                          : index <
+                            (["strategy", "configuration", "broker"] as Step[]).indexOf(
+                              step
+                            )
+                            ? "bg-emerald-500/20 text-emerald-500"
+                            : "bg-gray-800 text-gray-400"
                         }`}
-                    />
-                  )}
-                </div>
-              ))}
+                    >
+                      {index + 1}
+                    </div>
+
+                    {/* Line */}
+                    {index < 2 && (
+                      <div
+                        className={`w-40 h-1 mx-10 rounded
+              ${index <
+                            (["strategy", "configuration", "broker"] as Step[]).indexOf(
+                              step
+                            )
+                            ? "bg-emerald-500"
+                            : "bg-gray-800"
+                          }`}
+                      />
+                    )}
+                  </div>
+                )
+              )}
             </div>
           </div>
-
 
           {/* Step 1: Strategy */}
           {step === "strategy" && (
@@ -215,14 +254,14 @@ export default function CreateBotModal({ onClose, onSuccess }: CreateBotModalPro
                   <button
                     onClick={() => setStrategyType("RSI")}
                     className={`p-4 rounded-lg border-2 transition-all ${strategyType === "RSI"
-                      ? "border-emerald-500 bg-emerald-500/10"
-                      : "border-gray-800 bg-[#1a1c24] hover:border-gray-700"
+                        ? "border-emerald-500 bg-emerald-500/10"
+                        : "border-gray-800 bg-[#1a1c24] hover:border-gray-700"
                       }`}
                   >
                     <TrendingUp
                       className={`w-8 h-8 mx-auto mb-2 ${strategyType === "RSI"
-                        ? "text-emerald-500"
-                        : "text-gray-400"
+                          ? "text-emerald-500"
+                          : "text-gray-400"
                         }`}
                     />
                     <div className="text-white font-medium">RSI Strategy</div>
@@ -231,17 +270,19 @@ export default function CreateBotModal({ onClose, onSuccess }: CreateBotModalPro
                   <button
                     onClick={() => setStrategyType("Custom")}
                     className={`p-4 rounded-lg border-2 transition-all ${strategyType === "Custom"
-                      ? "border-emerald-500 bg-emerald-500/10"
-                      : "border-gray-800 bg-[#1a1c24] hover:border-gray-700"
+                        ? "border-emerald-500 bg-emerald-500/10"
+                        : "border-gray-800 bg-[#1a1c24] hover:border-gray-700"
                       }`}
                   >
                     <Code
                       className={`w-8 h-8 mx-auto mb-2 ${strategyType === "Custom"
-                        ? "text-emerald-500"
-                        : "text-gray-400"
+                          ? "text-emerald-500"
+                          : "text-gray-400"
                         }`}
                     />
-                    <div className="text-white font-medium">Custom Strategy</div>
+                    <div className="text-white font-medium">
+                      Custom Strategy
+                    </div>
                   </button>
                 </div>
               </div>
@@ -256,8 +297,8 @@ export default function CreateBotModal({ onClose, onSuccess }: CreateBotModalPro
                       key={tf.value}
                       onClick={() => setTimeframe(tf.value)}
                       className={`px-4 py-3 rounded-lg border font-medium transition-all ${timeframe === tf.value
-                        ? "border-emerald-500 bg-emerald-500/10 text-emerald-500"
-                        : "border-gray-800 bg-[#1a1c24] text-gray-400 hover:border-gray-700"
+                          ? "border-emerald-500 bg-emerald-500/10 text-emerald-500"
+                          : "border-gray-800 bg-[#1a1c24] text-gray-400 hover:border-gray-700"
                         }`}
                     >
                       {tf.label}
@@ -313,17 +354,21 @@ export default function CreateBotModal({ onClose, onSuccess }: CreateBotModalPro
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-400 mb-2">
-                    Price *
+                  Lots *
                   </label>
                   <input
-                    type="number"
-                    step="1"
-                    value={rsiConfig.quantity}
-                    onChange={(e) =>
-                      setRsiConfig({ ...rsiConfig, quantity: e.target.value })
+                  type="number"
+                  step="1"
+                  min="1"
+                  value={rsiConfig.quantity}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    if (value === "" || (Number.isInteger(Number(value)) && Number(value) > 0)) {
+                    setRsiConfig({ ...rsiConfig, quantity: value });
                     }
-                    placeholder="0.01"
-                    className="w-full px-3 py-2 bg-[#1a1c24] border border-gray-800 rounded-lg text-white focus:border-emerald-500"
+                  }}
+                  placeholder="1"
+                  className="w-full px-3 py-2 bg-[#1a1c24] border border-gray-800 rounded-lg text-white focus:border-emerald-500"
                   />
                 </div>
               </div>
@@ -351,47 +396,124 @@ export default function CreateBotModal({ onClose, onSuccess }: CreateBotModalPro
           {/* Step 3: Broker + Symbol */}
           {step === "broker" && (
             <div className="space-y-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-400 mb-2">
-                  Select Connected Broker *
-                </label>
-                <select
-                  value={selectedBrokerId}
-                  onChange={(e) => setSelectedBrokerId(e.target.value)}
-                  className="w-full px-4 py-3 bg-[#1a1c24] border border-gray-800 rounded-lg text-white focus:outline-none focus:border-emerald-500 mb-4"
-                >
-                  <option value="">-- Choose Broker --</option>
-                  {brokerAccounts.map((b) => (
-                    <option key={b._id} value={b._id}>
-                      {b.exchange} — {b.userAlias || b._id.slice(-5)}
-                    </option>
-                  ))}
-                </select>
+              <div className="pb-6">
+                <div className="pb-9">
+                  <label className="block text-sm font-medium text-gray-400 mb-2">
+                    Select Connected Broker *
+                  </label>
+                  <Select.Root
+                    value={selectedBrokerId}
+                    onValueChange={setSelectedBrokerId}
+                    onOpenChange={(open) => {
+                      if (open) {
+                        setTimeout(updateTriggerWidth, 0); // ensures DOM is ready
+                      }
+                    }}
+                  >
+                    <Select.Trigger ref={triggerRef} className="w-full px-4 py-3 bg-[#1a1c24] border border-gray-800 rounded-lg text-white flex justify-between items-center">
+                      <Select.Value placeholder="Choose Broker" />
+                      <ChevronDown className="h-4 w-4 text-gray-400" />
+                    </Select.Trigger>
 
-                {selectedBrokerId && (() => {
-                  const selectedBroker = brokerAccounts.find(b => b._id === selectedBrokerId);
-                  const exchange = selectedBroker?.exchange.toLowerCase() || "binance";
-                  const availableSymbols = symbolMap[exchange] || [];
+                    <Select.Portal>
+                      <Select.Content position="popper"
+                        sideOffset={6}
+                        collisionPadding={10}
+                        style={{ width: triggerWidth }} className="bg-[#1a1c24] border border-gray-800 rounded-lg shadow-lg text-white">
+                        <Select.Viewport className="p-2">
+                          {brokerAccounts.map((b) => (
+                            <Select.Item
+                              key={b._id}
+                              value={b._id}
+                              className="px-4 py-2 rounded text-white hover:bg-gray-700 cursor-pointer flex justify-between"
+                            >
+                              <Select.ItemText>
+                                {b.exchange} — {b.userAlias || b._id.slice(-5)}
+                              </Select.ItemText>
+                              <Select.ItemIndicator>
+                                <Check className="h-4 w-4 text-emerald-400" />
+                              </Select.ItemIndicator>
+                            </Select.Item>
+                          ))}
+                        </Select.Viewport>
+                      </Select.Content>
+                    </Select.Portal>
+                  </Select.Root>
+                </div>
 
-                  return (
-                    <div>
-                      <label className="block text-sm font-medium text-gray-400 mb-2">
-                        Select Symbol *
-                      </label>
-                      <select
-                        value={symbol}
-                        onChange={(e) => setSymbol(e.target.value)}
-                        className="w-full px-4 py-3 bg-[#1a1c24] border border-gray-800 rounded-lg text-white focus:outline-none focus:border-emerald-500"
-                      >
-                        {availableSymbols.map((s) => (
-                          <option key={s} value={s}>
-                            {s}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  );
-                })()}
+                {selectedBrokerId &&
+                  (() => {
+                    const selectedBroker = brokerAccounts.find(
+                      (b) => b._id === selectedBrokerId
+                    );
+                    const exchange =
+                      selectedBroker?.exchange.toLowerCase() || "binance";
+                    const availableSymbols = symbolMap[exchange] || [];
+
+                    return (
+                      <div>
+                        <label className="block text-sm font-medium text-gray-400 mb-2">
+                          Select Symbol *
+                        </label>
+                        <div>
+                          <Select.Root value={symbol} onValueChange={setSymbol} >
+                            <Select.Trigger
+
+                              className="
+        w-full px-4 py-3 
+        bg-[#1a1c24] 
+        border border-gray-800 
+        rounded-lg text-white 
+        flex justify-between items-center
+      "
+                            >
+                              <Select.Value placeholder="Choose Symbol" />
+                              <ChevronDown className="h-4 w-4 text-gray-400" />
+                            </Select.Trigger>
+
+                            <Select.Portal>
+                              <Select.Content
+                                position="popper"
+                                sideOffset={6}
+                                collisionPadding={10}
+                                style={{ width: triggerWidth }}
+                                className="
+          bg-[#1a1c24] 
+          border border-gray-800 
+          rounded-lg shadow-lg 
+          text-white
+        "
+                              >
+                                <Select.Viewport className="p-2 max-h-60 overflow-y-auto">
+                                  {availableSymbols.map((s) => (
+                                    <Select.Item
+                                      key={s}
+                                      value={s}
+                                      className="
+                px-4 py-2 rounded 
+                hover:bg-gray-700 
+                cursor-pointer 
+                flex justify-between
+                text-sm
+                w-full
+              "
+                                    >
+                                      <Select.ItemText className="w-full">
+                                        {s}
+                                      </Select.ItemText>
+                                      <Select.ItemIndicator>
+                                        <Check className="h-4 w-4 text-emerald-400" />
+                                      </Select.ItemIndicator>
+                                    </Select.Item>
+                                  ))}
+                                </Select.Viewport>
+                              </Select.Content>
+                            </Select.Portal>
+                          </Select.Root>
+                        </div>
+                      </div>
+                    );
+                  })()}
               </div>
             </div>
           )}
