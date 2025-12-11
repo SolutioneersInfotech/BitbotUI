@@ -169,9 +169,9 @@ export default function BotCard({
                 <div className="flex justify-between">
                     <span className="text-gray-400">Unrealized PnL:</span>
                     <span
-                        className={unrealizedPnl >= 0 ? "text-emerald-400" : "text-red-400"}
+                        className={pnl.unrealized >= 0 ? "text-emerald-400" : "text-red-400"}
                     >
-                        {unrealizedPnl.toFixed(2)} USDT
+                        {pnl.unrealized.toFixed(2)} USDT
                     </span>
                 </div>
 
@@ -240,7 +240,7 @@ export default function BotCard({
                                         <span className="text-white">{t.amount}</span>
                                     </div>
 
-                                    {t.pnl !== undefined && (
+                                    { t?.pnl !== null && (
                                         <div className="flex justify-between text-xs">
                                             <span>PnL:</span>
                                             <span
@@ -248,7 +248,7 @@ export default function BotCard({
                                                     t.pnl >= 0 ? "text-emerald-400" : "text-red-400"
                                                 }
                                             >
-                                                {t?.pnl?.toFixed(2)} USDT
+                                                {t?.pnl?.toFixed(4)} USDT
                                             </span>
                                         </div>
                                     )}

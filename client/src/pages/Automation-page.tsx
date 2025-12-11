@@ -223,11 +223,11 @@ export default function Automation() {
             <CardContent className="">
               <div className="flex items-center justify-between mb-1">
                 <h3 className="text-sm  text-white">Unrealized</h3>
-                <div className="text-sm text-white">{activeUnrealizedPnL?.toFixed(2)} $</div>
+                <div className={ activeUnrealizedPnL > 0 ? "text-sm text-green-400" : activeUnrealizedPnL == 0 ? "text-sm text-white-400" : "text-sm text-red-400"}>{activeUnrealizedPnL?.toFixed(2)} $</div>
               </div>
               <div className="flex items-center justify-between mb-1">
                 <h3 className="text-sm  text-white">Realized</h3>
-                <div className="text-sm text-white">{activeRealizedPnL?.toFixed(2)} $</div>
+                <div className={ activeUnrealizedPnL > 0 ? "text-sm text-green-400" : activeUnrealizedPnL == 0 ? "text-sm text-white-400" : "text-sm text-red-400"}>{activeRealizedPnL?.toFixed(2)} $</div>
               </div>
             </CardContent>
           </Card>
@@ -236,7 +236,7 @@ export default function Automation() {
             <CardHeader>
               <div className="flex items-center justify-between">
                 <h2 className="text-gray-400 text-sm">Past Bots</h2>
-                <div className="text-sm text-white">
+                <div className="text-sm text-blue-400">
                   {((data as any)?.lifetimeBots ?? 0)}
                 </div>
               </div>
@@ -244,12 +244,12 @@ export default function Automation() {
             <CardContent className="">
               <div className="flex items-center justify-between mb-1">
                 <h3 className="text-sm  text-white">Lifetime Trades</h3>
-                <div className="text-sm text-white">{((data as any)?.lifetimeTrades ?? 0)}</div>
+                <div className="text-sm text-blue">{((data as any)?.lifetimeTrades ?? 0)}</div>
               </div>
               <div className="flex items-center justify-between mb-1">
                 <h3 className="text-sm  text-white">Past PnL</h3>
-                <div className="text-sm text-white">
-                  {((data as any)?.pastPnl)?.toFixed(2)}$
+                <div className={ ((data as any)?.pastPnl) > 0 ? "text-sm text-green-400" : ((data as any)?.pastPnl) == 0 ? "text-sm text-white-400" : "text-sm text-red-400"}>
+                  {((data as any)?.pastPnl)?.toFixed(2)} $
                 </div>
               </div>
             </CardContent>
