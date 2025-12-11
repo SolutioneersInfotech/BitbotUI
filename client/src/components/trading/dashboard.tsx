@@ -74,7 +74,7 @@ export function Dashboard() {
 
   console.log("db ", deltaBalance);
 
-  const walletBalance = Number(deltaBalance?.result?.[0]?.balance || 0);
+  const walletBalance = Number(deltaBalance?.selected?.balance || 0);
 
   const { data: portfolio } = useQuery<Portfolio>({
     queryKey: ["/api/portfolio"],
@@ -193,7 +193,7 @@ export function Dashboard() {
                 className="text-white font-medium"
                 data-testid="text-portfolio-balance"
               >
-                ${Number(equity?.result?.curr_ae ?? 0).toFixed(2)}
+                ${Number(walletBalance ?? 0).toFixed(2)}
               </span>
             </div>
             <Button
@@ -237,7 +237,7 @@ export function Dashboard() {
                 </div>
                 <div className="text-2xl font-bold text-white mb-1">
                   $
-                  {Number(deltaBalance?.meta?.net_equity ?? 0).toLocaleString(
+                  {Number( walletBalance?? 0).toLocaleString(
                     undefined,
                     { minimumFractionDigits: 0, maximumFractionDigits: 2 }
                   )}
@@ -245,7 +245,7 @@ export function Dashboard() {
                 <div className="text-trading-success text-sm">
                   <span className="mr-1">Available Margin : $</span>
                   {Number(
-                    deltaBalance?.result?.[0]?.available_balance ?? 0
+                    deltaBalance?.selected?.available_balance ?? 0
                   ).toLocaleString(undefined, {
                     minimumFractionDigits: 0,
                     maximumFractionDigits: 2,
@@ -267,7 +267,7 @@ export function Dashboard() {
                 <div className="text-trading-info text-sm">
                   <span className="mr-1">Locked Margin : $</span>
                   {Number(
-                    deltaBalance?.result?.[0]?.blocked_margin ?? 0
+                    deltaBalance?.selected?.blocked_margin ?? 0
                   ).toLocaleString(undefined, {
                     minimumFractionDigits: 0,
                     maximumFractionDigits: 2,
