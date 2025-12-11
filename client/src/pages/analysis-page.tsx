@@ -7,6 +7,7 @@ import { ArrowLeft, TrendingUp, TrendingDown, BarChart3, Activity, Target } from
 import { Link } from "wouter";
 import { TradingChart } from "@/components/trading/chart";
 import type { Commodity, TechnicalIndicator } from "@shared/schema";
+import { useState, useEffect } from "react";
 
 export default function AnalysisPage() {
   const { data: commodities } = useQuery<Commodity[]>({
@@ -16,6 +17,23 @@ export default function AnalysisPage() {
   const { data: indicators } = useQuery<TechnicalIndicator>({
     queryKey: ["/api/technical-indicators", "commodity-1"],
   });
+
+  const [timeframe, setTimeframe] = useState("1H");
+const [chartData, setChartData] = useState([]);
+
+useEffect(() => {
+  async function loadData() {
+    // Example API call to your backend for OHLC data
+    const res = await fetch(`/api/charts?symbol=XAUUSD&tf=${timeframe}`);
+    const json = await res.json();
+
+    // Lightweight charts format: { time: "2023-01-01", value: 1945.23 }
+    setChartData(json);
+  }
+
+  loadData();
+}, [timeframe]);
+
 
   return (
     <div className="flex flex-col h-full min-h-0 bg-trading-dark text-white">

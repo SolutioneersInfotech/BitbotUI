@@ -353,20 +353,28 @@ export function Dashboard() {
           </div>
 
           {/* Chart and Technical Analysis */}
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-8">
-            <div className="lg:col-span-3">
-              <Card className="bg-trading-card border-gray-700 mb-6">
-                {/* ✅ Pass selected commodity */}
-                <Chart symbol={selectedCommodity} />
-              </Card>
-            </div>
-            <div>
-              <TechnicalAnalysis
-                data={indicators}
-                loading={loadingIndicators}
-              />
-            </div>
-          </div>
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-8 items-stretch">
+  
+  {/* CHART CARD */}
+  <Card className="bg-trading-card border-gray-700 lg:col-span-3 flex flex-col h-full">
+    <Chart symbol={selectedCommodity} />
+  </Card>
+
+  {/* TECHNICAL INDICATORS CARD */}
+  <Card className="bg-trading-card border-gray-700 flex flex-col h-full">
+  <CardHeader>
+    <CardTitle className="text-xl font-semibold text-white text-center">
+      Technical Indicators
+    </CardTitle>
+  </CardHeader>
+
+  <CardContent className="p-6 flex-1 overflow-y-auto">
+    <TechnicalAnalysis data={indicators} loading={loadingIndicators} />
+  </CardContent>
+</Card>
+
+</div>
+
 
           {/* Tabs */}
           <Card className="bg-trading-card border-gray-700">
