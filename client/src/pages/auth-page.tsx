@@ -268,7 +268,7 @@ export default function AuthPage() {
 
             <div className="text-center">
               <div className="bg-trading-info bg-opacity-20 rounded-lg p-4 mb-3">
-                <Zap className="h-8 w-8 text-trading-info mx-auto" />
+                <Zap className="h-8 w-8 text-antiquewhite mx-auto" />
               </div>
               <h3 className="font-semibold text-white mb-2">Real-time Data</h3>
               <p className="text-sm text-gray-400">
@@ -278,7 +278,7 @@ export default function AuthPage() {
 
             <div className="text-center">
               <div className="bg-trading-warning bg-opacity-20 rounded-lg p-4 mb-3">
-                <TrendingUp className="h-8 w-8 text-trading-warning mx-auto" />
+                <TrendingUp className="h-8 w-8 text-antiquewhite mx-auto" />
               </div>
               <h3 className="font-semibold text-white mb-2">Smart Signals</h3>
               <p className="text-sm text-gray-400">
@@ -288,7 +288,7 @@ export default function AuthPage() {
 
             <div className="text-center">
               <div className="bg-trading-purple bg-opacity-20 rounded-lg p-4 mb-3">
-                <Shield className="h-8 w-8 text-trading-purple mx-auto" />
+                <Shield className="h-8 w-8 text-antiquewhite mx-auto" />
               </div>
               <h3 className="font-semibold text-white mb-2">Secure Trading</h3>
               <p className="text-sm text-gray-400">
