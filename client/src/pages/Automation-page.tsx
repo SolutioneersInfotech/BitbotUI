@@ -237,14 +237,14 @@ export default function Automation() {
               <div className="flex items-center justify-between">
                 <h2 className="text-gray-400 text-sm">Past Bots</h2>
                 <div className="text-sm text-white">
-                  {((data as any)?.lifetimeBots ?? 0) - bots.length}
+                  {((data as any)?.lifetimeBots ?? 0)}
                 </div>
               </div>
             </CardHeader>
             <CardContent className="">
               <div className="flex items-center justify-between mb-1">
                 <h3 className="text-sm  text-white">Lifetime Trades</h3>
-                <div className="text-sm text-white">{activeBots.length}</div>
+                <div className="text-sm text-white">{((data as any)?.lifetimeTrades ?? 0)}</div>
               </div>
               <div className="flex items-center justify-between mb-1">
                 <h3 className="text-sm  text-white">Past PnL</h3>
