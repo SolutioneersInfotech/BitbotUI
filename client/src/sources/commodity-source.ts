@@ -1,4 +1,19 @@
+import { useQuery } from "@tanstack/react-query";
 import { BASE_API_URL as baseURL } from "../config";
+import type { Commodity } from "@shared/schema";
+
+export function useCommodities() {
+  return useQuery<Commodity[]>({
+    queryKey: ["commodities"],
+    queryFn: async () => {
+      const res = await fetch("/api/commodities");
+      if (!res.ok) {
+        throw new Error("Failed to fetch commodities");
+      }
+      return res.json();
+    },
+  });
+}
 
 export interface CommodityIndicators {
   price: number | null;

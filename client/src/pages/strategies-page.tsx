@@ -13,7 +13,7 @@ import {
 import { Link } from "wouter";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import Chart from "@/components/trading/stratigy-chart";
+import Chart from "@/components/chart/stratigy-chart";
 import { useCommodity } from "@/context/Commoditycontext";
 import StrategyList from "@/components/trading/stratigylist";
 import { useState } from "react";

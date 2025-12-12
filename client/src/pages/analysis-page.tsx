@@ -8,34 +8,38 @@ import { Link } from "wouter";
 import { TradingChart } from "@/components/trading/chart";
 import type { Commodity, TechnicalIndicator } from "@shared/schema";
 import { useState, useEffect } from "react";
+import Chart from "@/components/chart/stratigy-chart";
+import { TechnicalAnalysis } from "@/components/trading/technical-analysis";
+import { useCommodityFromURL } from "@/hooks/useUrlParams";
+import { fetchCommodityIndicators, useCommodities } from "@/sources/commodity-source";
+import { cleanSymbol, normalizeToUSDT } from "@/lib/utils";
+import { fetchIndicatorSeries } from "@/hooks/useIndicatorSeries";
 
 export default function AnalysisPage() {
-  const { data: commodities } = useQuery<Commodity[]>({
-    queryKey: ["/api/commodities"],
-  });
+  const { data: commodities } = useCommodities();
 
-  const { data: indicators } = useQuery<TechnicalIndicator>({
-    queryKey: ["/api/technical-indicators", "commodity-1"],
-  });
+  const [indicators, setIndicators] = useState<any>(null);
+  const [loadingIndicators, setLoadingIndicators] = useState<boolean>(true);
 
   const [timeframe, setTimeframe] = useState("1H");
-const [chartData, setChartData] = useState([]);
+  const [chartData, setChartData] = useState([]);
+  const [selectedCommodity, setSelectedCommodity] = useState<any>(null);
+  const commodity = useCommodityFromURL();
+  useEffect(() => {
+    setSelectedCommodity(commodity);
+  }, [commodity]);
 
-useEffect(() => {
-  async function loadData() {
-    // Example API call to your backend for OHLC data
-    const res = await fetch(`/api/charts?symbol=XAUUSD&tf=${timeframe}`);
-    const json = await res.json();
+  useEffect(() => {
+    setLoadingIndicators(true);
+    async function loadIndicators() {
+      const data = await fetchCommodityIndicators(selectedCommodity);
+      setIndicators(data);
+      setLoadingIndicators(false);
+    }
+    loadIndicators();
+  }, [selectedCommodity]);
 
-    // Lightweight charts format: { time: "2023-01-01", value: 1945.23 }
-    setChartData(json);
-  }
-
-  loadData();
-}, [timeframe]);
-
-
-  return (
+    return (
     <div className="flex flex-col h-full min-h-0 bg-trading-dark text-white">
       {/* Header */}
       <div className="bg-trading-card border-b border-gray-700 p-5">
@@ -55,24 +59,35 @@ useEffect(() => {
           </div>
 
           <div className="flex items-center space-x-4">
-            <p className="text-gray-400 whitespace-nowrap hidden md:block">Advanced market analysis and trading signals</p>
-            <Select defaultValue="commodity-1">
-              <SelectTrigger className="w-48 bg-trading-dark border-gray-600 text-white" data-testid="select-commodity">
-                <SelectValue placeholder="Select Commodity" />
+            <p className="text-gray-400 whitespace-nowrap hidden md:block">
+              Advanced market analysis and trading signals
+            </p>
+
+            <Select
+              value={normalizeToUSDT(selectedCommodity)}
+              onValueChange={(value) => { setSelectedCommodity(value); }}
+            >
+              <SelectTrigger
+                className="w-28 bg-trading-dark border-gray-600 text-white"
+                data-testid="select-commodity"
+              >
+                <SelectValue placeholder={"Select Commodity"} />
               </SelectTrigger>
+
               <SelectContent>
                 {commodities?.map((commodity) => (
-                  <SelectItem key={commodity.id} value={commodity.id}>
-                    {commodity.name} ({commodity.symbol})
+                  <SelectItem key={commodity.symbol} value={normalizeToUSDT(commodity.symbol)}>
+                    {commodity.name}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
           </div>
+
         </div>
       </div>
 
-  <div className="flex-1 min-h-0 p-6 overflow-y-auto">
+      <div className="flex-1 min-h-0 p-6 overflow-y-auto">
         {/* Analysis Overview */}
         <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
           <Card className="bg-trading-card border-gray-700">
@@ -112,7 +127,7 @@ useEffect(() => {
                 <TrendingUp className="h-4 w-4 text-trading-success" />
               </div>
               <div className="text-2xl font-bold text-white mb-1" data-testid="text-macd-value">
-                {indicators?.macd || '--'}
+                {Number(indicators?.macd).toFixed(2) || '--'}
               </div>
               <div className="text-trading-success text-sm">
                 Bullish signal
@@ -151,122 +166,27 @@ useEffect(() => {
           </Card>
         </div>
 
-        {/* Chart and Analysis */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-          <div className="lg:col-span-2">
-            <TradingChart commodity={commodities?.[0]?.id ?? null} />
-          </div>
+        {/* Chart and Technical Analysis */}
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-8 items-stretch">
 
-          <div className="space-y-6">
-            {/* Technical Indicators */}
-            <Card className="bg-trading-card border-gray-700">
-              <CardHeader>
-                <CardTitle className="text-lg font-semibold text-white">Technical Indicators</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-400">RSI (14)</span>
-                    <div className="text-right">
-                      <div className="text-trading-warning font-medium" data-testid="indicator-rsi-detailed">
-                        {indicators?.rsi || "--"}
-                      </div>
-                      <div className="text-xs text-gray-500">Neutral</div>
-                    </div>
-                  </div>
+          {/* CHART CARD */}
+          <Card className="bg-trading-card border-gray-700 lg:col-span-3 flex flex-col h-full">
+            <Chart strategy="" symbol={selectedCommodity ?? "BTCUSD"} />
+          </Card>
 
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-400">MACD</span>
-                    <div className="text-right">
-                      <div className="text-trading-success font-medium" data-testid="indicator-macd-detailed">
-                        {indicators?.macd || "--"}
-                      </div>
-                      <div className="text-xs text-trading-success">Bullish</div>
-                    </div>
-                  </div>
+          {/* TECHNICAL INDICATORS CARD */}
+          <Card className="bg-trading-card border-gray-700 flex flex-col h-full">
+            <CardHeader>
+              <CardTitle className="text-xl font-semibold text-white text-center">
+                Technical Indicators
+              </CardTitle>
+            </CardHeader>
 
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-400">SMA (50)</span>
-                    <div className="text-right">
-                      <div className="text-white font-medium" data-testid="indicator-sma-detailed">
-                        ${indicators?.sma50 || "--"}
-                      </div>
-                      <div className="text-xs text-gray-500">Support</div>
-                    </div>
-                  </div>
+            <CardContent className="p-6 flex-1 overflow-y-auto">
+              <TechnicalAnalysis data={indicators} loading={loadingIndicators} />
+            </CardContent>
+          </Card>
 
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-400">EMA (20)</span>
-                    <div className="text-right">
-                      <div className="text-white font-medium" data-testid="indicator-ema-detailed">
-                        ${indicators?.ema20 || "--"}
-                      </div>
-                      <div className="text-xs text-trading-success">Above Price</div>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Trading Signal */}
-            {indicators?.signal && (
-              <Card className={`border ${indicators.signal === 'BUY'
-                  ? 'bg-trading-success bg-opacity-20 border-trading-success'
-                  : indicators.signal === 'SELL'
-                    ? 'bg-trading-danger bg-opacity-20 border-trading-danger'
-                    : 'bg-trading-warning bg-opacity-20 border-trading-warning'
-                }`}>
-                <CardContent className="pt-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <Badge
-                      className={`${indicators.signal === 'BUY'
-                          ? 'bg-trading-success'
-                          : indicators.signal === 'SELL'
-                            ? 'bg-trading-danger'
-                            : 'bg-trading-warning'
-                        } text-white`}
-                      data-testid="trading-signal-badge"
-                    >
-                      {indicators.signal} Signal
-                    </Badge>
-                    <span className={`text-sm font-medium ${indicators.signal === 'BUY'
-                        ? 'text-trading-success'
-                        : indicators.signal === 'SELL'
-                          ? 'text-trading-danger'
-                          : 'text-trading-warning'
-                      }`} data-testid="signal-confidence-detailed">
-                      {indicators.confidence}% Confidence
-                    </span>
-                  </div>
-                  <p className="text-gray-300 text-sm mb-4">
-                    {indicators.signal === 'BUY'
-                      ? "Strong bullish momentum detected. Technical indicators are aligned for an upward move. Consider entry at current levels with proper risk management."
-                      : indicators.signal === 'SELL'
-                        ? "Bearish signals emerging. Multiple indicators suggest downward pressure. Consider taking profits or establishing short positions."
-                        : "Mixed signals detected. Market is in consolidation phase. Wait for clearer direction before making significant moves."
-                    }
-                  </p>
-                  <div className="flex space-x-2">
-                    <Button
-                      className={indicators.signal === 'BUY' ? 'bg-trading-success hover:bg-green-600' : 'bg-trading-danger hover:bg-red-600'}
-                      size="sm"
-                      data-testid="button-execute-signal"
-                    >
-                      Execute {indicators.signal}
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="bg-trading-dark border-gray-600 text-white hover:bg-gray-600"
-                      data-testid="button-set-alert"
-                    >
-                      Set Alert
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-          </div>
         </div>
 
         {/* Market Analysis */}

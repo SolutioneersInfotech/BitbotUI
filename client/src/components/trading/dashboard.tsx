@@ -32,13 +32,13 @@ import {
 } from "lucide-react";
 import type { Portfolio, Commodity } from "@shared/schema";
 import { useCommodity } from "@/context/Commoditycontext";
-import Chart from "@/components/trading/stratigy-chart";
+import Chart from "@/components/chart/stratigy-chart";
 import { BrokerAccounts } from "./BrokerAccount";
 import { useDeltaBalance, useEquityChange } from "@/sources/portfolio-source";
 // import { BrokerAccounts } from "./BrokerAccount";
 import { useActiveTrades } from "@/sources/trades-source";
 import DeltaHistory from "./tradehistory";
-import { fetchCommodityIndicators } from "@/sources/commodity-source";
+import { fetchCommodityIndicators, useCommodities } from "@/sources/commodity-source";
 import usePlatformMetrics from "@/hooks/usePlatformMetrics";
 
 export function Dashboard() {
@@ -80,10 +80,8 @@ export function Dashboard() {
     queryKey: ["/api/portfolio"],
   });
 
-  const { data: commodities } = useQuery<Commodity[]>({
-    queryKey: ["/api/commodities"],
-  });
-
+  const { data: commodities } = useCommodities();
+  
   const handleSupportSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setShowSupportModal(false);
@@ -161,7 +159,7 @@ export function Dashboard() {
                 Strategies
               </Link>
               <Link
-                href="/analysis"
+                href={"/analysis?commodity="+selectedCommodity}
                 className="text-gray-400 hover:text-white transition-colors"
               >
                 Analysis
@@ -237,7 +235,7 @@ export function Dashboard() {
                 </div>
                 <div className="text-2xl font-bold text-white mb-1">
                   $
-                  {Number( walletBalance?? 0).toLocaleString(
+                  {Number(walletBalance ?? 0).toLocaleString(
                     undefined,
                     { minimumFractionDigits: 0, maximumFractionDigits: 2 }
                   )}
@@ -346,7 +344,7 @@ export function Dashboard() {
                   <h3 className="text-gray-400 text-sm">Win Rate</h3>
                   <Target className="h-4 w-4 text-trading-warning" />
                 </div>
-                <div className="text-2xl font-bold text-white mb-1">{((metrics as any)?.winRate*100).toFixed(1)}%</div>
+                <div className="text-2xl font-bold text-white mb-1">{((metrics as any)?.winRate * 100).toFixed(1)}%</div>
                 <div className="text-gray-400 text-sm">{(metrics as any)?.lifetimeTrades} trades yet</div>
               </CardContent>
             </Card>
@@ -354,26 +352,26 @@ export function Dashboard() {
 
           {/* Chart and Technical Analysis */}
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-8 items-stretch">
-  
-  {/* CHART CARD */}
-  <Card className="bg-trading-card border-gray-700 lg:col-span-3 flex flex-col h-full">
-    <Chart symbol={selectedCommodity} />
-  </Card>
 
-  {/* TECHNICAL INDICATORS CARD */}
-  <Card className="bg-trading-card border-gray-700 flex flex-col h-full">
-  <CardHeader>
-    <CardTitle className="text-xl font-semibold text-white text-center">
-      Technical Indicators
-    </CardTitle>
-  </CardHeader>
+            {/* CHART CARD */}
+            <Card className="bg-trading-card border-gray-700 lg:col-span-3 flex flex-col h-full">
+              <Chart symbol={selectedCommodity} />
+            </Card>
 
-  <CardContent className="p-6 flex-1 overflow-y-auto">
-    <TechnicalAnalysis data={indicators} loading={loadingIndicators} />
-  </CardContent>
-</Card>
+            {/* TECHNICAL INDICATORS CARD */}
+            <Card className="bg-trading-card border-gray-700 flex flex-col h-full">
+              <CardHeader>
+                <CardTitle className="text-xl font-semibold text-white text-center">
+                  Technical Indicators
+                </CardTitle>
+              </CardHeader>
 
-</div>
+              <CardContent className="p-6 flex-1 overflow-y-auto">
+                <TechnicalAnalysis data={indicators} loading={loadingIndicators} />
+              </CardContent>
+            </Card>
+
+          </div>
 
 
           {/* Tabs */}
