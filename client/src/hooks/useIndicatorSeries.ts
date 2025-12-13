@@ -6,8 +6,9 @@ export type IndicatorSeries =
   | "bb"
   | "macd"
   | "rsi"
-  | "sma50"
-  | "ema50";
+  | "adx"
+  | "atr";
+
 
 export interface Candle {
   time: number;
@@ -36,31 +37,50 @@ export interface IndicatorSeriesResponse {
 
   // overlays
   sma?: (number | null)[];
-  ema?: (number | null)[];
+  emaFast?: (number | null)[];
+  emaSlow?: (number | null)[];
   bb?: BollingerPoint[];
+
+  // oscillators / momentum
   rsi?: (number | null)[];
+  adx?: (number | null)[];
+  atr?: (number | null)[];
 
   // macd
   macd?: MACDSeries;
 }
 
+
 export async function fetchIndicatorSeries(
   symbol: string,
   interval: string,
-  series: IndicatorSeries[]
+  series: IndicatorSeries[],
+  params?: {
+        rsiPeriod?: number;
+        emaFast?: number;
+        emaSlow?: number;
+        macdFast?: number;
+        macdSlow?: number;
+        macdSignal?: number;
+        adxPeriod?: number;
+        atrPeriod?: number;
+    }
 ): Promise<IndicatorSeriesResponse> {
-  const params = new URLSearchParams({
+  const searchParams = new URLSearchParams({
     interval,
     series: series.join(","),
-    limit: "500",
-    smaPeriod: "50",
-    emaPeriod: "20",
-    bbPeriod: "20",
-    bbStd: "2",
-    rsiPeriod: "14",
+    limit: "500"
   });
+  if (params?.rsiPeriod) searchParams.set("rsiPeriod", String(params.rsiPeriod));
+    if (params?.emaFast) searchParams.set("emaFast", String(params.emaFast));
+    if (params?.emaSlow) searchParams.set("emaSlow", String(params.emaSlow));
+    if (params?.macdFast) searchParams.set("macdFast", String(params.macdFast));
+    if (params?.macdSlow) searchParams.set("macdSlow", String(params.macdSlow));
+    if (params?.macdSignal) searchParams.set("macdSignal", String(params.macdSignal));
+    if (params?.adxPeriod) searchParams.set("adxPeriod", String(params.adxPeriod));
+    if (params?.atrPeriod) searchParams.set("atrPeriod", String(params.atrPeriod));
   const token = localStorage.getItem("token");
-  const res = await fetch(baseURL+`/commodities/indicators/${symbol}/series?${params.toString()}`, {
+  const res = await fetch(baseURL+`/commodities/indicators/${symbol}/series?${searchParams.toString()}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
