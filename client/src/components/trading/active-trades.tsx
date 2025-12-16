@@ -221,7 +221,7 @@ export function ActiveTrades({
       const token = localStorage.getItem("token");
 
       const res = await fetch(
-        `http://localhost:3000/api/trades/${tradeId}/close`,
+        `https://predator-production.up.railway.app/api/trades/${tradeId}/close`,
         {
           method: "PATCH",
           headers: {

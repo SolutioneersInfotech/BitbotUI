@@ -52,7 +52,7 @@ const TradeForm: React.FC<TradeFormProps> = ({ onSubmit }) => {
                 const token = localStorage.getItem("token");
 
                 const res = await fetch(
-                    "http://localhost:3000/api/exchange/list",
+                    "https://predator-production.up.railway.app/api/exchange/list",
                     {
                         headers: {
                             Authorization: `Bearer ${token}`,
