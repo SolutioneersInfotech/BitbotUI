@@ -13,16 +13,12 @@ import { TechnicalAnalysis } from "@/components/trading/technical-analysis";
 import { useCommodityFromURL } from "@/hooks/useUrlParams";
 import { fetchCommodityIndicators, useCommodities } from "@/sources/commodity-source";
 import { cleanSymbol, normalizeToUSDT } from "@/lib/utils";
-import { fetchIndicatorSeries } from "@/hooks/useIndicatorSeries";
 
 export default function AnalysisPage() {
   const { data: commodities } = useCommodities();
 
   const [indicators, setIndicators] = useState<any>(null);
   const [loadingIndicators, setLoadingIndicators] = useState<boolean>(true);
-
-  const [timeframe, setTimeframe] = useState("1H");
-  const [chartData, setChartData] = useState([]);
   const [selectedCommodity, setSelectedCommodity] = useState<any>(null);
   const commodity = useCommodityFromURL();
   useEffect(() => {
@@ -171,7 +167,7 @@ export default function AnalysisPage() {
 
           {/* CHART CARD */}
           <Card className="bg-trading-card border-gray-700 lg:col-span-3 flex flex-col h-full">
-            <Chart strategy="" symbol={selectedCommodity ?? "BTCUSD"} />
+            <Chart strategy="" symbol={selectedCommodity ?? "BTCUSD"} showIndicators={true}/>
           </Card>
 
           {/* TECHNICAL INDICATORS CARD */}
