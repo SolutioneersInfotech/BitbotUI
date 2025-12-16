@@ -29,22 +29,43 @@ const MAIN_BACKEND = "http://localhost:3000";
 export const AuthContext = createContext<AuthContextType | null>(null);
 
 // ---------------- SYNC USER TO MAIN BACKEND ----------------
+// const syncUserToMainBackend = async (authUser: User) => {
+//   try {
+//     await fetch(`${MAIN_BACKEND}/api/user/sync`, {
+//       method: "POST",
+//       headers: { "Content-Type": "application/json" },
+//       body: JSON.stringify({
+//         email: authUser.email,
+//         firstName: authUser.firstName || "",
+//         lastName: authUser.lastName || "",
+//         authId: authUser.authId || authUser.id, // ⭐ FINAL FIX
+//       }),
+//     });
+//   } catch (err) {
+//     console.log("⚠ User sync failed:", err);
+//   }
+// };
 const syncUserToMainBackend = async (authUser: User) => {
   try {
+    const token = localStorage.getItem("token");
+
     await fetch(`${MAIN_BACKEND}/api/user/sync`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`, // 🔥 SAME AUTH
+      },
       body: JSON.stringify({
         email: authUser.email,
         firstName: authUser.firstName || "",
         lastName: authUser.lastName || "",
-        authId: authUser.authId || authUser.id, // ⭐ FINAL FIX
       }),
     });
   } catch (err) {
     console.log("⚠ User sync failed:", err);
   }
 };
+
 // -----------------------------------------------------------------
 
 export function AuthProvider({ children }: { children: ReactNode }) {

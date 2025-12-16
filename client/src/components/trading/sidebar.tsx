@@ -73,7 +73,7 @@ export function TradingSidebar() {
         type: data.price ? "LIMIT" : "MARKET", // optional but useful
       };
 
-      const res = await fetch("https://predator-production.up.railway.app/api/trade/execute", {
+      const res = await fetch("http://localhost:3000/api/trade/execute", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -203,8 +203,8 @@ export function TradingSidebar() {
                   <div
                     key={strategy.id}
                     className={`bg-trading-dark rounded-lg p-3 ${strategy.isActive
-                        ? "border-l-4 border-trading-success"
-                        : "cursor-pointer hover:border-l-4 hover:border-trading-info transition-all"
+                      ? "border-l-4 border-trading-success"
+                      : "cursor-pointer hover:border-l-4 hover:border-trading-info transition-all"
                       }`}
                   >
                     <div className="flex items-center justify-between">

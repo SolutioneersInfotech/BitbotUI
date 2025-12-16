@@ -359,7 +359,7 @@ export function BrokerAccounts() {
     const { data: accounts, isLoading } = useQuery<any[]>({
         queryKey: ["/api/exchange/list"],
         queryFn: async () => {
-            const res = await fetch("https://predator-production.up.railway.app/api/exchange/list", {
+            const res = await fetch("http://localhost:3000/api/exchange/list", {
                 headers: {
                     "Authorization": `Bearer ${token}`, // ✅ add token
                 },
@@ -380,7 +380,7 @@ export function BrokerAccounts() {
     // ✅ Connect Broker API call
     const { mutate: connectBroker, isPending: isConnecting } = useMutation({
         mutationFn: async () => {
-            const res = await fetch("https://predator-production.up.railway.app/api/exchange/connect", {
+            const res = await fetch("http://localhost:3000/api/exchange/connect", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

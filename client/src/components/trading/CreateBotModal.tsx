@@ -10,7 +10,7 @@ interface CreateBotModalProps {
 }
 
 type Step = "strategy" | "configuration" | "broker";
-const userId = "68ea1582539ded5dbe090fef";
+// const userId = "68ea1582539ded5dbe090fef";
 
 export default function CreateBotModal({
   onClose,
@@ -76,7 +76,7 @@ export default function CreateBotModal({
       try {
         const token = localStorage.getItem("token");
         const res = await fetch(
-          "https://predator-production.up.railway.app/api/exchange/list",
+          "http://localhost:3000/api/exchange/list",
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -132,8 +132,8 @@ export default function CreateBotModal({
           : {};
 
     try {
+      // const userId = localStorage.getItem("userId") || "";
       const res = await createBot({
-        userId: userId,
         name: botName,
         strategy_type: strategyType,
         timeframe,
@@ -142,6 +142,7 @@ export default function CreateBotModal({
         symbol,
         exchange: "delta",
       });
+
       onSuccess();
     } catch (err: any) {
       alert("Error creating bot: " + err.message);
@@ -254,14 +255,14 @@ export default function CreateBotModal({
                   <button
                     onClick={() => setStrategyType("RSI")}
                     className={`p-4 rounded-lg border-2 transition-all ${strategyType === "RSI"
-                        ? "border-emerald-500 bg-emerald-500/10"
-                        : "border-gray-800 bg-[#1a1c24] hover:border-gray-700"
+                      ? "border-emerald-500 bg-emerald-500/10"
+                      : "border-gray-800 bg-[#1a1c24] hover:border-gray-700"
                       }`}
                   >
                     <TrendingUp
                       className={`w-8 h-8 mx-auto mb-2 ${strategyType === "RSI"
-                          ? "text-emerald-500"
-                          : "text-gray-400"
+                        ? "text-emerald-500"
+                        : "text-gray-400"
                         }`}
                     />
                     <div className="text-white font-medium">RSI Strategy</div>
@@ -270,14 +271,14 @@ export default function CreateBotModal({
                   <button
                     onClick={() => setStrategyType("Custom")}
                     className={`p-4 rounded-lg border-2 transition-all ${strategyType === "Custom"
-                        ? "border-emerald-500 bg-emerald-500/10"
-                        : "border-gray-800 bg-[#1a1c24] hover:border-gray-700"
+                      ? "border-emerald-500 bg-emerald-500/10"
+                      : "border-gray-800 bg-[#1a1c24] hover:border-gray-700"
                       }`}
                   >
                     <Code
                       className={`w-8 h-8 mx-auto mb-2 ${strategyType === "Custom"
-                          ? "text-emerald-500"
-                          : "text-gray-400"
+                        ? "text-emerald-500"
+                        : "text-gray-400"
                         }`}
                     />
                     <div className="text-white font-medium">
@@ -297,8 +298,8 @@ export default function CreateBotModal({
                       key={tf.value}
                       onClick={() => setTimeframe(tf.value)}
                       className={`px-4 py-3 rounded-lg border font-medium transition-all ${timeframe === tf.value
-                          ? "border-emerald-500 bg-emerald-500/10 text-emerald-500"
-                          : "border-gray-800 bg-[#1a1c24] text-gray-400 hover:border-gray-700"
+                        ? "border-emerald-500 bg-emerald-500/10 text-emerald-500"
+                        : "border-gray-800 bg-[#1a1c24] text-gray-400 hover:border-gray-700"
                         }`}
                     >
                       {tf.label}
@@ -354,21 +355,21 @@ export default function CreateBotModal({
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-400 mb-2">
-                  Lots *
+                    Lots *
                   </label>
                   <input
-                  type="number"
-                  step="1"
-                  min="1"
-                  value={rsiConfig.quantity}
-                  onChange={(e) => {
-                    const value = e.target.value;
-                    if (value === "" || (Number.isInteger(Number(value)) && Number(value) > 0)) {
-                    setRsiConfig({ ...rsiConfig, quantity: value });
-                    }
-                  }}
-                  placeholder="1"
-                  className="w-full px-3 py-2 bg-[#1a1c24] border border-gray-800 rounded-lg text-white focus:border-emerald-500"
+                    type="number"
+                    step="1"
+                    min="1"
+                    value={rsiConfig.quantity}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      if (value === "" || (Number.isInteger(Number(value)) && Number(value) > 0)) {
+                        setRsiConfig({ ...rsiConfig, quantity: value });
+                      }
+                    }}
+                    placeholder="1"
+                    className="w-full px-3 py-2 bg-[#1a1c24] border border-gray-800 rounded-lg text-white focus:border-emerald-500"
                   />
                 </div>
               </div>
