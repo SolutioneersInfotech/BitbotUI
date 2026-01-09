@@ -19,6 +19,7 @@ import {
   getMacdState,
   getRsiState,
 } from "@/lib/chartHelper";
+import { BASE_API_URL } from "@/config";
 
 interface Candle {
   time: number;
@@ -53,7 +54,9 @@ const Chart: React.FC<{
   strategy: string | null;
   symbol: string;
   showIndicators?: boolean;
-}> = ({ symbol, showIndicators = false }) => {
+  timeframe?: string;
+  onTimeframeChange?: (tf: string) => void;
+}> = ({ symbol, showIndicators = false, timeframe, onTimeframeChange }) => {
   const priceChartRef = useRef<HTMLDivElement>(null);
   const rsiChartRef = useRef<HTMLDivElement>(null);
   const macdChartRef = useRef<HTMLDivElement>(null);
@@ -65,8 +68,10 @@ const Chart: React.FC<{
   const adxTooltipRef = useRef<HTMLDivElement | null>(null);
   const atrTooltipRef = useRef<HTMLDivElement | null>(null);
   const candleCloseByTimeRef = useRef<Map<number, number>>(new Map());
-  const [timeframe, setTimeframe] = useState("1d");
+  const [internalTimeframe, setInternalTimeframe] = useState("1d");
   const [loading, setLoading] = useState(false);
+
+  const selectedTimeframe = timeframe ?? internalTimeframe;
 
   const intervalMap: Record<string, string> = {
     "1m": "1m",
@@ -99,10 +104,10 @@ const Chart: React.FC<{
 
   // Auto-disable heavy indicators on 1m
   useEffect(() => {
-    if (timeframe === "1m") {
+    if (selectedTimeframe === "1m") {
       setIndicatorToggles((t) => ({ ...t, bbands: false }));
     }
-  }, [timeframe]);
+  }, [selectedTimeframe]);
 
   // ----------------------------------------------------------
   // MAIN EFFECT
@@ -166,13 +171,17 @@ const Chart: React.FC<{
       try {
         setLoading(true);
 
-        const interval = intervalMap[timeframe];
+        const interval = intervalMap[selectedTimeframe];
         const token = localStorage.getItem("token");
 
         const res = await fetch(
-          `https://predator-production.up.railway.app/api/strategy/candles/${symbol}?interval=${interval}&limit=500`,
+          `${BASE_API_URL}/strategy/candles/${symbol}?interval=${interval}&limit=500`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
+
+        if (!res.ok) {
+          throw new Error("Failed to fetch candles");
+        }
 
         const data = await res.json();
         if (cancelled) return;
@@ -199,7 +208,7 @@ const Chart: React.FC<{
           (k) => indicatorToggles[k as keyof typeof indicatorToggles]
         );
 
-        const cfg = INDICATOR_CONFIG[timeframe];
+        const cfg = INDICATOR_CONFIG[selectedTimeframe];
         const indicators = await fetchIndicatorSeries(
           symbol,
           interval,
@@ -792,7 +801,15 @@ const Chart: React.FC<{
       adxChart?.remove();
       atrChart?.remove();
     };
-  }, [symbol, timeframe, indicatorToggles]);
+  }, [symbol, selectedTimeframe, indicatorToggles]);
+
+  const handleTimeframeChange = (nextTimeframe: string) => {
+    if (timeframe) {
+      onTimeframeChange?.(nextTimeframe);
+    } else {
+      setInternalTimeframe(nextTimeframe);
+    }
+  };
 
   return (
     <Card className="bg-trading-card border-gray-700">
@@ -803,14 +820,14 @@ const Chart: React.FC<{
 
         <div className="flex items-center space-x-4">
           <TimeframeSelector
-            timeframe={timeframe}
-            setTimeframe={setTimeframe}
+            timeframe={selectedTimeframe}
+            setTimeframe={handleTimeframeChange}
           />
           {showIndicators && (
             <IndicatorToggleBar
               toggles={indicatorToggles}
               setToggles={setIndicatorToggles}
-              timeframe={timeframe}
+              timeframe={selectedTimeframe}
             />
           )}
         </div>
