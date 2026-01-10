@@ -269,192 +269,197 @@ export default function AnalysisPage() {
       </div>
 
       <div className="flex-1 min-h-0 p-6 overflow-y-auto">
-        <div className="mx-auto w-full max-w-7xl 2xl:max-w-[1400px] space-y-8">
-        {/* Row 1 */}
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 items-stretch">
-          <div className="lg:col-span-3 h-full">
-            <MarketBiasHeroCard
-              bias={signals?.overall?.bias ?? "Neutral"}
-              confidence={signals?.overall?.confidence ?? 0}
-              strategyText={strategyText}
-            />
-          </div>
-          <div className="lg:col-span-2 grid grid-cols-1 gap-4 lg:grid-rows-3 auto-rows-fr h-full">
-            <Card className="bg-trading-card border-gray-700 h-full">
-              <CardContent className="pt-6 h-full flex flex-col justify-between">
-                <div className="flex items-center justify-between mb-3">
-                  <h3 className="text-gray-400 text-sm">Momentum</h3>
-                  <Zap className="h-4 w-4 text-trading-success" />
-                </div>
-                <div className="text-2xl font-bold text-white">
-                  {Math.round(momentumScore)}
-                </div>
-                <p className="text-xs text-gray-400">
-                  {momentumScore >= 70
-                    ? "Strong push"
-                    : momentumScore >= 45
-                      ? "Building"
-                      : "Cooling"}
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-trading-card border-gray-700 h-full">
-              <CardContent className="pt-6 h-full flex flex-col justify-between">
-                <div className="flex items-center justify-between mb-3">
-                  <h3 className="text-gray-400 text-sm">Volatility</h3>
-                  <Wind className="h-4 w-4 text-trading-info" />
-                </div>
-                <div className="text-2xl font-bold text-white">
-                  {volatilityLabel}
-                </div>
-                <p className="text-xs text-gray-400">ATR-based range</p>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-trading-card border-gray-700 h-full">
-              <CardContent className="pt-6 h-full flex flex-col justify-between">
-                <div className="flex items-center justify-between mb-3">
-                  <h3 className="text-gray-400 text-sm">Risk</h3>
-                  <ShieldAlert className="h-4 w-4 text-trading-warning" />
-                </div>
-                <div className="text-2xl font-bold text-white">
-                  {Math.round(riskScore)}
-                </div>
-                <p className="text-xs text-gray-400">
-                  {riskScore >= 70
-                    ? "Elevated"
-                    : riskScore >= 45
-                      ? "Moderate"
-                      : "Contained"}
-                </p>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-
-        {/* Row 2 */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
-          <div className="lg:col-span-3 flex flex-col">
-            <MultiTimeframeSignalMatrix
-              rows={signals?.timeframes}
-              activeTf={activeTf}
-              onSelectTf={setActiveTf}
-              className="h-full"
-            />
-          </div>
-
-          <div className="lg:col-span-6 flex flex-col">
-            <div className="relative h-full">
-              <Chart
-                strategy=""
-                symbol={symbol}
-                timeframe={activeTf}
-                onTimeframeChange={setActiveTf}
-                showIndicators={true}
+        <div className="mx-auto w-full max-w-7xl 2xl:max-w-[1600px] space-y-8">
+          {/* Row 1 */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+            <div className="lg:col-span-6 flex flex-col gap-6">
+              <MarketBiasHeroCard
+                bias={signals?.overall?.bias ?? "Neutral"}
+                confidence={signals?.overall?.confidence ?? 0}
+                strategyText={strategyText}
               />
-              <ChartInsightsOverlay insights={insights} />
+              <TradeSuggestionPanel row={activeRow} className="h-full" />
+            </div>
+            <div className="lg:col-span-3 flex flex-col">
+              <MultiTimeframeSignalMatrix
+                rows={signals?.timeframes}
+                activeTf={activeTf}
+                onSelectTf={setActiveTf}
+                className="h-full"
+              />
+            </div>
+            <div className="lg:col-span-3 grid grid-cols-1 gap-4 lg:grid-rows-3 auto-rows-fr h-full">
+              <Card className="bg-trading-card border-gray-700 h-full">
+                <CardContent className="pt-6 h-full flex flex-col justify-between">
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="text-gray-400 text-sm">Momentum</h3>
+                    <Zap className="h-4 w-4 text-trading-success" />
+                  </div>
+                  <div className="text-2xl font-bold text-white">
+                    {Math.round(momentumScore)}
+                  </div>
+                  <p className="text-xs text-gray-400">
+                    {momentumScore >= 70
+                      ? "Strong push"
+                      : momentumScore >= 45
+                        ? "Building"
+                        : "Cooling"}
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-trading-card border-gray-700 h-full">
+                <CardContent className="pt-6 h-full flex flex-col justify-between">
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="text-gray-400 text-sm">Volatility</h3>
+                    <Wind className="h-4 w-4 text-trading-info" />
+                  </div>
+                  <div className="text-2xl font-bold text-white">
+                    {volatilityLabel}
+                  </div>
+                  <p className="text-xs text-gray-400">ATR-based range</p>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-trading-card border-gray-700 h-full">
+                <CardContent className="pt-6 h-full flex flex-col justify-between">
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="text-gray-400 text-sm">Risk</h3>
+                    <ShieldAlert className="h-4 w-4 text-trading-warning" />
+                  </div>
+                  <div className="text-2xl font-bold text-white">
+                    {Math.round(riskScore)}
+                  </div>
+                  <p className="text-xs text-gray-400">
+                    {riskScore >= 70
+                      ? "Elevated"
+                      : riskScore >= 45
+                        ? "Moderate"
+                        : "Contained"}
+                  </p>
+                </CardContent>
+              </Card>
             </div>
           </div>
 
-          <div className="lg:col-span-3 lg:sticky lg:top-24">
-            <TradeSuggestionPanel row={activeRow} className="h-full" />
+          {/* Row 2 */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+            <div className="lg:col-span-9 flex flex-col">
+              <div className="relative h-full">
+                <Chart
+                  strategy=""
+                  symbol={symbol}
+                  timeframe={activeTf}
+                  onTimeframeChange={setActiveTf}
+                  showIndicators={true}
+                />
+                <ChartInsightsOverlay insights={insights} />
+              </div>
+            </div>
+
+            <div className="lg:col-span-3 flex flex-col">
+              <Card className="bg-trading-card border-gray-700 h-full">
+                <CardHeader>
+                  <CardTitle className="text-xl font-semibold text-white text-center">
+                    Technical Indicators
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="p-6">
+                  <TechnicalAnalysis
+                    data={indicators}
+                    loading={loadingIndicators}
+                  />
+                </CardContent>
+              </Card>
+            </div>
           </div>
-        </div>
 
-        {/* Row 3 */}
-        <div className="space-y-6">
-          <IndicatorVisualCards row={activeRow} />
-          <Card className="bg-trading-card border-gray-700">
-            <CardHeader>
-              <CardTitle className="text-xl font-semibold text-white text-center">
-                Technical Indicators
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="p-6">
-              <TechnicalAnalysis data={indicators} loading={loadingIndicators} />
-            </CardContent>
-          </Card>
-        </div>
+          {/* Row 3 */}
+          <div className="space-y-6">
+            <IndicatorVisualCards row={activeRow} />
+          </div>
 
-        {/* Row 4 */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <Card className="bg-trading-card border-gray-700">
-            <CardHeader>
-              <CardTitle className="text-lg font-semibold text-white">
-                Market Analysis Summary
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <h4 className="text-white font-medium mb-3">Bullish Factors</h4>
-                  <ul className="space-y-2 text-gray-300 text-sm">
-                    <li className="flex items-center">
-                      <TrendingUp className="h-4 w-4 text-trading-success mr-2" />
-                      MACD showing bullish crossover
-                    </li>
-                    <li className="flex items-center">
-                      <TrendingUp className="h-4 w-4 text-trading-success mr-2" />
-                      Price above 20-day EMA
-                    </li>
-                    <li className="flex items-center">
-                      <TrendingUp className="h-4 w-4 text-trading-success mr-2" />
-                      Strong volume confirmation
-                    </li>
-                    <li className="flex items-center">
-                      <TrendingUp className="h-4 w-4 text-trading-success mr-2" />
-                      Support holding at key levels
-                    </li>
-                  </ul>
+          {/* Row 4 */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <Card className="bg-trading-card border-gray-700">
+              <CardHeader>
+                <CardTitle className="text-lg font-semibold text-white">
+                  Market Analysis Summary
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <h4 className="text-white font-medium mb-3">
+                      Bullish Factors
+                    </h4>
+                    <ul className="space-y-2 text-gray-300 text-sm">
+                      <li className="flex items-center">
+                        <TrendingUp className="h-4 w-4 text-trading-success mr-2" />
+                        MACD showing bullish crossover
+                      </li>
+                      <li className="flex items-center">
+                        <TrendingUp className="h-4 w-4 text-trading-success mr-2" />
+                        Price above 20-day EMA
+                      </li>
+                      <li className="flex items-center">
+                        <TrendingUp className="h-4 w-4 text-trading-success mr-2" />
+                        Strong volume confirmation
+                      </li>
+                      <li className="flex items-center">
+                        <TrendingUp className="h-4 w-4 text-trading-success mr-2" />
+                        Support holding at key levels
+                      </li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <h4 className="text-white font-medium mb-3">Risk Factors</h4>
+                    <ul className="space-y-2 text-gray-300 text-sm">
+                      <li className="flex items-center">
+                        <TrendingDown className="h-4 w-4 text-trading-danger mr-2" />
+                        RSI approaching overbought zone
+                      </li>
+                      <li className="flex items-center">
+                        <TrendingDown className="h-4 w-4 text-trading-danger mr-2" />
+                        Resistance near recent highs
+                      </li>
+                      <li className="flex items-center">
+                        <TrendingDown className="h-4 w-4 text-trading-danger mr-2" />
+                        Global economic uncertainty
+                      </li>
+                      <li className="flex items-center">
+                        <TrendingDown className="h-4 w-4 text-trading-danger mr-2" />
+                        Fed policy changes ahead
+                      </li>
+                    </ul>
+                  </div>
                 </div>
-
-                <div>
-                  <h4 className="text-white font-medium mb-3">Risk Factors</h4>
-                  <ul className="space-y-2 text-gray-300 text-sm">
-                    <li className="flex items-center">
-                      <TrendingDown className="h-4 w-4 text-trading-danger mr-2" />
-                      RSI approaching overbought zone
-                    </li>
-                    <li className="flex items-center">
-                      <TrendingDown className="h-4 w-4 text-trading-danger mr-2" />
-                      Resistance near recent highs
-                    </li>
-                    <li className="flex items-center">
-                      <TrendingDown className="h-4 w-4 text-trading-danger mr-2" />
-                      Global economic uncertainty
-                    </li>
-                    <li className="flex items-center">
-                      <TrendingDown className="h-4 w-4 text-trading-danger mr-2" />
-                      Fed policy changes ahead
-                    </li>
-                  </ul>
+                <div className="mt-6 flex items-center gap-3">
+                  <Badge
+                    className={getBiasBadge(signals?.overall?.bias ?? "Neutral")}
+                  >
+                    {signals?.overall?.bias ?? "Neutral"} bias
+                  </Badge>
+                  <span className="text-xs text-gray-400">
+                    {signals?.overall?.confidence
+                      ? `${Math.round(signals.overall.confidence)}% confidence`
+                      : "Awaiting confirmation"}
+                  </span>
                 </div>
-              </div>
-              <div className="mt-6 flex items-center gap-3">
-                <Badge className={getBiasBadge(signals?.overall?.bias ?? "Neutral")}
-                >
-                  {signals?.overall?.bias ?? "Neutral"} bias
-                </Badge>
-                <span className="text-xs text-gray-400">
-                  {signals?.overall?.confidence
-                    ? `${Math.round(signals.overall.confidence)}% confidence`
-                    : "Awaiting confirmation"}
-                </span>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
 
-          <NewsPanel
-            news={newsQuery.data}
-            isLoading={newsQuery.isLoading}
-            onRefresh={() =>
-              queryClient.invalidateQueries({
-                queryKey: ["news", cleanedSymbol],
-              })
-            }
-          />
-        </div>
+            <NewsPanel
+              news={newsQuery.data}
+              isLoading={newsQuery.isLoading}
+              onRefresh={() =>
+                queryClient.invalidateQueries({
+                  queryKey: ["news", cleanedSymbol],
+                })
+              }
+            />
+          </div>
         </div>
       </div>
     </div>
