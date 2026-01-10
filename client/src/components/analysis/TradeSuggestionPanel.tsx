@@ -2,6 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { TimeframeSignalRow } from "@/sources/analysis-source";
+import { cn } from "@/lib/utils";
 
 const formatNumber = (value: number | null | undefined, digits = 2) => {
   if (value == null || Number.isNaN(value)) return "—";
@@ -14,10 +15,16 @@ const toRangeLabel = (value: number | null | undefined) => {
   return `${(value - delta).toFixed(2)} - ${(value + delta).toFixed(2)}`;
 };
 
-export function TradeSuggestionPanel({ row }: { row?: TimeframeSignalRow }) {
+export function TradeSuggestionPanel({
+  row,
+  className,
+}: {
+  row?: TimeframeSignalRow;
+  className?: string;
+}) {
   if (!row) {
     return (
-      <Card className="bg-trading-card border-gray-700">
+      <Card className={cn("bg-trading-card border-gray-700", className)}>
         <CardHeader>
           <CardTitle className="text-lg font-semibold text-white">
             Trade Suggestion
@@ -68,7 +75,7 @@ export function TradeSuggestionPanel({ row }: { row?: TimeframeSignalRow }) {
         : "—";
 
   return (
-    <Card className="bg-trading-card border-gray-700">
+    <Card className={cn("bg-trading-card border-gray-700", className)}>
       <CardHeader>
         <CardTitle className="text-lg font-semibold text-white">
           Trade Suggestion
