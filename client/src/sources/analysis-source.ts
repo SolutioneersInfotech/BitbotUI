@@ -47,6 +47,12 @@ export interface SymbolNewsResponse {
   symbol: string;
   asOf: string;
   items: NewsItem[];
+  pagination?: {
+    page: number;
+    pageSize: number;
+    totalPages: number;
+    hasMore: boolean;
+  };
   overallSentiment: "positive" | "negative" | "neutral";
   keyThemes: string[];
   watchlist: string[];
@@ -86,17 +92,26 @@ export async function fetchMultiTimeframeSignals(
 }
 
 export async function fetchSymbolNews(
-  symbol: string
+  symbol: string,
+  page: number = 1,
+  limit: number = 10
 ): Promise<SymbolNewsResponse> {
   const token = localStorage.getItem("token");
-
-  const res = await fetch(`${BASE_API_URL}/analysis/news/${symbol}`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
+  const query = new URLSearchParams({
+    page: String(page),
+    limit: String(limit),
   });
+
+  const res = await fetch(
+    `${BASE_API_URL}/analysis/news/${symbol}?${query.toString()}`,
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
 
   if (!res.ok) {
     throw new Error("Failed to fetch news");
