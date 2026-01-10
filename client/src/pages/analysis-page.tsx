@@ -271,8 +271,8 @@ export default function AnalysisPage() {
       <div className="flex-1 min-h-0 p-6 overflow-y-auto">
         <div className="mx-auto w-full max-w-7xl 2xl:max-w-[1600px] space-y-8">
           {/* Row 1 */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
-            <div className="lg:col-span-6 flex flex-col gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 items-stretch">
+            <div className="lg:col-span-3 flex flex-col gap-6">
               <MarketBiasHeroCard
                 bias={signals?.overall?.bias ?? "Neutral"}
                 confidence={signals?.overall?.confidence ?? 0}
@@ -280,15 +280,7 @@ export default function AnalysisPage() {
               />
               <TradeSuggestionPanel row={activeRow} className="h-full" />
             </div>
-            <div className="lg:col-span-3 flex flex-col">
-              <MultiTimeframeSignalMatrix
-                rows={signals?.timeframes}
-                activeTf={activeTf}
-                onSelectTf={setActiveTf}
-                className="h-full"
-              />
-            </div>
-            <div className="lg:col-span-3 grid grid-cols-1 gap-4 lg:grid-rows-3 auto-rows-fr h-full">
+            <div className="lg:col-span-2 grid grid-cols-1 gap-4 lg:grid-rows-3 auto-rows-fr h-full">
               <Card className="bg-trading-card border-gray-700 h-full">
                 <CardContent className="pt-6 h-full flex flex-col justify-between">
                   <div className="flex items-center justify-between mb-3">
@@ -344,7 +336,16 @@ export default function AnalysisPage() {
 
           {/* Row 2 */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
-            <div className="lg:col-span-9 flex flex-col">
+            <div className="lg:col-span-3 flex flex-col">
+              <MultiTimeframeSignalMatrix
+                rows={signals?.timeframes}
+                activeTf={activeTf}
+                onSelectTf={setActiveTf}
+                className="h-full"
+              />
+            </div>
+
+            <div className="lg:col-span-6 flex flex-col">
               <div className="relative h-full">
                 <Chart
                   strategy=""
@@ -357,7 +358,7 @@ export default function AnalysisPage() {
               </div>
             </div>
 
-            <div className="lg:col-span-3 flex flex-col">
+            <div className="lg:col-span-3">
               <Card className="bg-trading-card border-gray-700 h-full">
                 <CardHeader>
                   <CardTitle className="text-xl font-semibold text-white text-center">
