@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useInfiniteQuery, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "wouter";
 import {
   ArrowLeft,
@@ -123,17 +123,23 @@ export default function AnalysisPage() {
     },
   });
 
-  const newsQuery = useQuery<SymbolNewsResponse>({
+  const newsQuery = useInfiniteQuery<SymbolNewsResponse>({
     queryKey: ["news", cleanedSymbol],
-    queryFn: async () => {
+    queryFn: async ({ pageParam = 1 }) => {
       try {
-        return await fetchSymbolNews(cleanedSymbol);
+        return await fetchSymbolNews(cleanedSymbol, pageParam, 8);
       } catch (error) {
         console.error("Failed to load news", error);
         return {
           symbol: cleanedSymbol,
           asOf: new Date().toISOString(),
           items: [],
+          pagination: {
+            page: 1,
+            pageSize: 8,
+            totalPages: 1,
+            hasMore: false,
+          },
           overallSentiment: "neutral",
           keyThemes: [],
           watchlist: [],
@@ -141,9 +147,16 @@ export default function AnalysisPage() {
         };
       }
     },
+    initialPageParam: 1,
+    getNextPageParam: (lastPage) =>
+      lastPage.pagination?.hasMore ? lastPage.pagination.page + 1 : undefined,
   });
 
   const signals = signalsQuery.data;
+  const newsPages = newsQuery.data?.pages ?? [];
+  const newsItems = newsPages.flatMap((page) => page.items);
+  const newsWarning = newsPages.find((page) => page.warning)?.warning;
+  const hasMoreNews = newsQuery.hasNextPage ?? false;
 
   useEffect(() => {
     if (!signals) return;
@@ -469,13 +482,21 @@ export default function AnalysisPage() {
             </Card>
 
             <NewsPanel
-              news={newsQuery.data}
+              newsItems={newsItems}
+              warning={newsWarning}
               isLoading={newsQuery.isLoading}
+              isFetchingNextPage={newsQuery.isFetchingNextPage}
+              hasMore={hasMoreNews}
               onRefresh={() =>
                 queryClient.invalidateQueries({
                   queryKey: ["news", cleanedSymbol],
                 })
               }
+              onLoadMore={() => {
+                if (newsQuery.hasNextPage && !newsQuery.isFetchingNextPage) {
+                  newsQuery.fetchNextPage();
+                }
+              }}
             />
           </div>
         </div>
