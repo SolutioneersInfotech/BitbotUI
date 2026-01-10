@@ -9,6 +9,7 @@ type MultiTimeframeSignalMatrixProps = {
   rows?: TimeframeSignalRow[];
   activeTf?: string;
   onSelectTf?: (tf: string) => void;
+  className?: string;
 };
 
 const signalStyles: Record<
@@ -24,11 +25,12 @@ export function MultiTimeframeSignalMatrix({
   rows,
   activeTf,
   onSelectTf,
+  className,
 }: MultiTimeframeSignalMatrixProps) {
   const showSkeleton = !rows || rows.length === 0;
 
   return (
-    <Card className="bg-trading-card border-gray-700">
+    <Card className={cn("bg-trading-card border-gray-700", className)}>
       <CardHeader className="pb-3">
         <CardTitle className="text-lg font-semibold text-white">
           Multi-Timeframe Signals

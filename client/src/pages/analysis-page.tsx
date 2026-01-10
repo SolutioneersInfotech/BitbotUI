@@ -269,18 +269,19 @@ export default function AnalysisPage() {
       </div>
 
       <div className="flex-1 min-h-0 p-6 overflow-y-auto">
+        <div className="mx-auto w-full max-w-7xl 2xl:max-w-[1400px] space-y-8">
         {/* Row 1 */}
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 mb-8">
-          <div className="lg:col-span-3">
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 items-stretch">
+          <div className="lg:col-span-3 h-full">
             <MarketBiasHeroCard
               bias={signals?.overall?.bias ?? "Neutral"}
               confidence={signals?.overall?.confidence ?? 0}
               strategyText={strategyText}
             />
           </div>
-          <div className="lg:col-span-2 grid grid-cols-1 gap-4">
-            <Card className="bg-trading-card border-gray-700">
-              <CardContent className="pt-6">
+          <div className="lg:col-span-2 grid grid-cols-1 gap-4 lg:grid-rows-3 auto-rows-fr h-full">
+            <Card className="bg-trading-card border-gray-700 h-full">
+              <CardContent className="pt-6 h-full flex flex-col justify-between">
                 <div className="flex items-center justify-between mb-3">
                   <h3 className="text-gray-400 text-sm">Momentum</h3>
                   <Zap className="h-4 w-4 text-trading-success" />
@@ -298,8 +299,8 @@ export default function AnalysisPage() {
               </CardContent>
             </Card>
 
-            <Card className="bg-trading-card border-gray-700">
-              <CardContent className="pt-6">
+            <Card className="bg-trading-card border-gray-700 h-full">
+              <CardContent className="pt-6 h-full flex flex-col justify-between">
                 <div className="flex items-center justify-between mb-3">
                   <h3 className="text-gray-400 text-sm">Volatility</h3>
                   <Wind className="h-4 w-4 text-trading-info" />
@@ -311,8 +312,8 @@ export default function AnalysisPage() {
               </CardContent>
             </Card>
 
-            <Card className="bg-trading-card border-gray-700">
-              <CardContent className="pt-6">
+            <Card className="bg-trading-card border-gray-700 h-full">
+              <CardContent className="pt-6 h-full flex flex-col justify-between">
                 <div className="flex items-center justify-between mb-3">
                   <h3 className="text-gray-400 text-sm">Risk</h3>
                   <ShieldAlert className="h-4 w-4 text-trading-warning" />
@@ -333,17 +334,18 @@ export default function AnalysisPage() {
         </div>
 
         {/* Row 2 */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-8 items-start">
-          <div className="lg:col-span-3">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+          <div className="lg:col-span-3 flex flex-col">
             <MultiTimeframeSignalMatrix
               rows={signals?.timeframes}
               activeTf={activeTf}
               onSelectTf={setActiveTf}
+              className="h-full"
             />
           </div>
 
-          <div className="lg:col-span-6">
-            <div className="relative">
+          <div className="lg:col-span-6 flex flex-col">
+            <div className="relative h-full">
               <Chart
                 strategy=""
                 symbol={symbol}
@@ -356,12 +358,12 @@ export default function AnalysisPage() {
           </div>
 
           <div className="lg:col-span-3 lg:sticky lg:top-24">
-            <TradeSuggestionPanel row={activeRow} />
+            <TradeSuggestionPanel row={activeRow} className="h-full" />
           </div>
         </div>
 
         {/* Row 3 */}
-        <div className="space-y-6 mb-8">
+        <div className="space-y-6">
           <IndicatorVisualCards row={activeRow} />
           <Card className="bg-trading-card border-gray-700">
             <CardHeader>
@@ -452,6 +454,7 @@ export default function AnalysisPage() {
               })
             }
           />
+        </div>
         </div>
       </div>
     </div>

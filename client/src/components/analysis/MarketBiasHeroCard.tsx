@@ -22,12 +22,12 @@ export function MarketBiasHeroCard({
   return (
     <div
       className={cn(
-        "rounded-2xl p-[1px] bg-gradient-to-r",
+        "rounded-2xl p-[1px] bg-gradient-to-r h-full",
         biasStyles[bias]
       )}
     >
-      <Card className="bg-trading-card border-0 rounded-2xl">
-        <CardContent className="p-6 lg:p-8">
+      <Card className="bg-trading-card border-0 rounded-2xl h-full">
+        <CardContent className="p-6 lg:p-8 h-full flex flex-col justify-between">
           <div className="flex items-start justify-between gap-4">
             <div>
               <p className="text-sm uppercase tracking-[0.4em] text-gray-400">
