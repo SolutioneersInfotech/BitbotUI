@@ -6,7 +6,6 @@ import {
   BarChart3,
   TrendingDown,
   TrendingUp,
-  ShieldAlert,
   Wind,
   Zap,
 } from "lucide-react";
@@ -37,7 +36,6 @@ import { MarketBiasHeroCard } from "@/components/analysis/MarketBiasHeroCard";
 import { MultiTimeframeSignalMatrix } from "@/components/analysis/MultiTimeframeSignalMatrix";
 import { TradeSuggestionPanel } from "@/components/analysis/TradeSuggestionPanel";
 import { ChartInsightsOverlay } from "@/components/analysis/ChartInsightsOverlay";
-import { IndicatorVisualCards } from "@/components/analysis/IndicatorVisualCards";
 import { NewsPanel } from "@/components/analysis/NewsPanel";
 
 const DEFAULT_TIMEFRAMES = ["15m", "1h", "4h", "1d", "1w"] as const;
@@ -56,6 +54,14 @@ const getVolatilityLabel = (atr: number | null, price: number | null) => {
   if (pct < 2.5) return "Moderate";
   if (pct < 3.75) return "High";
   return "Extreme";
+};
+
+const getAdxLabel = (value: number | null) => {
+  if (value == null) return "No data";
+  if (value < 20) return "Weak";
+  if (value < 30) return "Building";
+  if (value < 45) return "Strong";
+  return "Very strong";
 };
 
 export default function AnalysisPage() {
@@ -205,11 +211,13 @@ export default function AnalysisPage() {
     : "Awaiting signal confirmation.";
 
   const momentumScore = activeRow?.scores?.momentum ?? 0;
-  const riskScore = activeRow?.scores?.risk ?? 0;
   const volatilityLabel = getVolatilityLabel(
     activeRow?.snapshot.atr ?? null,
     activeRow?.snapshot.price ?? null
   );
+  const macdValue = activeRow?.snapshot.macd ?? null;
+  const atrValue = activeRow?.snapshot.atr ?? null;
+  const adxValue = activeRow?.snapshot.adx ?? null;
 
   return (
     <div className="flex flex-col h-full min-h-0 bg-trading-dark text-white">
@@ -298,13 +306,18 @@ export default function AnalysisPage() {
                   <div className="text-2xl font-bold text-white">
                     {Math.round(momentumScore)}
                   </div>
-                  <p className="text-xs text-gray-400">
-                    {momentumScore >= 70
-                      ? "Strong push"
-                      : momentumScore >= 45
-                        ? "Building"
-                        : "Cooling"}
-                  </p>
+                  <div className="text-xs text-gray-400 space-y-1">
+                    <p>
+                      {momentumScore >= 70
+                        ? "Strong push"
+                        : momentumScore >= 45
+                          ? "Building"
+                          : "Cooling"}
+                    </p>
+                    <p className="text-gray-500">
+                      MACD {macdValue != null ? macdValue.toFixed(2) : "—"}
+                    </p>
+                  </div>
                 </CardContent>
               </Card>
 
@@ -317,25 +330,26 @@ export default function AnalysisPage() {
                   <div className="text-2xl font-bold text-white">
                     {volatilityLabel}
                   </div>
-                  <p className="text-xs text-gray-400">ATR-based range</p>
+                  <div className="text-xs text-gray-400 space-y-1">
+                    <p>ATR-based range</p>
+                    <p className="text-gray-500">
+                      ATR {atrValue != null ? atrValue.toFixed(2) : "—"}
+                    </p>
+                  </div>
                 </CardContent>
               </Card>
 
               <Card className="bg-trading-card border-gray-700 h-full">
                 <CardContent className="pt-6 h-full flex flex-col justify-between">
                   <div className="flex items-center justify-between mb-3">
-                    <h3 className="text-gray-400 text-sm">Risk</h3>
-                    <ShieldAlert className="h-4 w-4 text-trading-warning" />
+                    <h3 className="text-gray-400 text-sm">Trend</h3>
+                    <TrendingUp className="h-4 w-4 text-trading-success" />
                   </div>
                   <div className="text-2xl font-bold text-white">
-                    {Math.round(riskScore)}
+                    {adxValue != null ? adxValue.toFixed(1) : "—"}
                   </div>
                   <p className="text-xs text-gray-400">
-                    {riskScore >= 70
-                      ? "Elevated"
-                      : riskScore >= 45
-                        ? "Moderate"
-                        : "Contained"}
+                    {getAdxLabel(adxValue)}
                   </p>
                 </CardContent>
               </Card>
@@ -375,11 +389,6 @@ export default function AnalysisPage() {
           </div>
 
           {/* Row 3 */}
-          <div className="space-y-6">
-            <IndicatorVisualCards row={activeRow} />
-          </div>
-
-          {/* Row 4 */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <Card className="bg-trading-card border-gray-700">
               <CardHeader>
