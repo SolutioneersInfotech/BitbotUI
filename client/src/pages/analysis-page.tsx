@@ -206,9 +206,18 @@ export default function AnalysisPage() {
     return nextInsights;
   }, [activeRow]);
 
-  const strategyText = signals?.overall?.bestTimeframe
-    ? `Best alignment on ${signals.overall.bestTimeframe.toUpperCase()} timeframe.`
-    : "Awaiting signal confirmation.";
+  const activeBias =
+    activeRow?.trend && activeRow.trend !== "Range"
+      ? activeRow.trend
+      : activeRow?.trend ?? signals?.overall?.bias ?? "Neutral";
+  const activeConfidence =
+    activeRow?.confidence ?? signals?.overall?.confidence ?? 0;
+
+  const strategyText = activeRow?.tf
+    ? `Signals aligned for ${activeRow.tf.toUpperCase()} timeframe.`
+    : signals?.overall?.bestTimeframe
+      ? `Best alignment on ${signals.overall.bestTimeframe.toUpperCase()} timeframe.`
+      : "Awaiting signal confirmation.";
 
   const momentumScore = activeRow?.scores?.momentum ?? 0;
   const volatilityLabel = getVolatilityLabel(
@@ -282,8 +291,8 @@ export default function AnalysisPage() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
             <div className="lg:col-span-6 flex flex-col gap-6">
               <MarketBiasHeroCard
-                bias={signals?.overall?.bias ?? "Neutral"}
-                confidence={signals?.overall?.confidence ?? 0}
+                bias={activeBias}
+                confidence={activeConfidence}
                 strategyText={strategyText}
               />
               <TradeSuggestionPanel row={activeRow} className="h-full" />
