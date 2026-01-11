@@ -78,16 +78,19 @@ function FactorList({ title, items, iconType }: FactorListProps) {
     iconType === "bullish" ? "text-emerald-400" : "text-rose-400";
 
   return (
-    <div className="space-y-2">
-      <h4 className="text-xs font-semibold uppercase tracking-wide text-gray-400">
+    <div className="space-y-[clamp(0.4rem,0.35rem+0.4vw,0.85rem)]">
+      <h4 className="text-[clamp(0.6rem,0.55rem+0.3vw,0.8rem)] font-semibold uppercase tracking-wide text-gray-400">
         {title}
       </h4>
       {items.length > 0 ? (
-        <ul className="space-y-2 text-sm text-gray-300">
+        <ul className="space-y-[clamp(0.35rem,0.3rem+0.4vw,0.75rem)] text-[clamp(0.75rem,0.7rem+0.35vw,0.95rem)] text-gray-300">
           {items.map((item, index) => (
-            <li key={`${title}-${index}`} className="flex min-w-0 gap-2">
+            <li
+              key={`${title}-${index}`}
+              className="flex min-w-0 items-start gap-[clamp(0.35rem,0.3rem+0.4vw,0.75rem)]"
+            >
               <Icon
-                className={`mt-0.5 h-4 w-4 flex-shrink-0 ${iconClass}`}
+                className={`mt-[clamp(0.1rem,0.1rem+0.2vw,0.3rem)] h-[clamp(0.8rem,0.7rem+0.4vw,1rem)] w-[clamp(0.8rem,0.7rem+0.4vw,1rem)] flex-shrink-0 ${iconClass}`}
                 aria-hidden="true"
               />
               <span className="break-words text-gray-300">{item}</span>
@@ -95,7 +98,9 @@ function FactorList({ title, items, iconType }: FactorListProps) {
           ))}
         </ul>
       ) : (
-        <p className="text-xs text-gray-500">No signals.</p>
+        <p className="text-[clamp(0.65rem,0.6rem+0.3vw,0.85rem)] text-gray-500">
+          No signals.
+        </p>
       )}
     </div>
   );
@@ -109,10 +114,10 @@ export function MarketAnalysisSummaryCard({
   const statePills = data.statePills?.filter((pill) => Boolean(pill?.label)) ?? [];
 
   return (
-    <div className="flex h-full flex-col gap-4">
-      <div className="flex flex-wrap items-start justify-between gap-3">
+    <div className="flex h-full flex-col gap-[clamp(0.75rem,0.6rem+0.6vw,1.25rem)]">
+      <div className="flex flex-wrap items-start justify-between gap-[clamp(0.5rem,0.4rem+0.5vw,1rem)]">
         <div className="flex flex-wrap items-center gap-2">
-          <h3 className="text-base font-semibold text-white">
+          <h3 className="text-[clamp(0.9rem,0.8rem+0.5vw,1.1rem)] font-semibold text-white">
             Market Analysis Summary
           </h3>
           {showFallbackBadge && (
@@ -130,14 +135,14 @@ export function MarketAnalysisSummaryCard({
             </TooltipProvider>
           )}
         </div>
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-wrap items-center gap-[clamp(0.4rem,0.35rem+0.4vw,0.75rem)]">
           <Pill label={data.biasLabel} tone={getBiasTone(data.biasLabel)} />
           <Pill label={`${confidence}%`} tone="neutral" />
         </div>
       </div>
 
       {statePills.length > 0 && (
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-[clamp(0.4rem,0.35rem+0.4vw,0.75rem)]">
           {statePills.slice(0, 3).map((pill, index) => (
             <Pill
               key={`${pill.label}-${index}`}
@@ -148,7 +153,7 @@ export function MarketAnalysisSummaryCard({
         </div>
       )}
 
-      <div className="flex flex-1 flex-col gap-4 md:grid md:grid-cols-2">
+      <div className="flex flex-1 flex-col gap-[clamp(0.75rem,0.6rem+0.6vw,1.25rem)]">
         <FactorList
           title="Bullish"
           items={data.bullishFactors ?? []}
@@ -162,7 +167,7 @@ export function MarketAnalysisSummaryCard({
       </div>
 
       {data.takeaway && (
-        <div className="border-t border-gray-700/60 pt-3 text-xs text-gray-400">
+        <div className="border-t border-gray-700/60 pt-[clamp(0.5rem,0.45rem+0.4vw,0.9rem)] text-[clamp(0.65rem,0.6rem+0.3vw,0.85rem)] text-gray-400">
           {data.takeaway}
         </div>
       )}
