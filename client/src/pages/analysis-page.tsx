@@ -20,10 +20,17 @@ import {
 } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 import Chart from "@/components/chart/stratigy-chart";
 import { TechnicalAnalysis } from "@/components/trading/technical-analysis";
 import { useCommodityFromURL } from "@/hooks/useUrlParams";
+import { useMarketSummary } from "@/hooks/useMarketSummary";
 import { fetchCommodityIndicators, useCommodities } from "@/sources/commodity-source";
 import { cleanSymbol, normalizeToUSDT } from "@/lib/utils";
 import {
@@ -37,6 +44,7 @@ import { MultiTimeframeSignalMatrix } from "@/components/analysis/MultiTimeframe
 import { TradeSuggestionPanel } from "@/components/analysis/TradeSuggestionPanel";
 import { ChartInsightsOverlay } from "@/components/analysis/ChartInsightsOverlay";
 import { NewsPanel } from "@/components/analysis/NewsPanel";
+import { MarketSummarySkeleton } from "@/components/analysis/MarketSummarySkeleton";
 
 const DEFAULT_TIMEFRAMES = ["15m", "1h", "4h", "1d", "1w"] as const;
 
@@ -94,7 +102,7 @@ export default function AnalysisPage() {
     loadIndicators();
   }, [selectedCommodity]);
 
-  const symbol = selectedCommodity ?? "BTCUSD";
+  const symbol = normalizeToUSDT(selectedCommodity ?? "BTCUSD");
   const cleanedSymbol = cleanSymbol(symbol);
 
   const signalsQuery = useQuery<MultiTimeframeSignalsResponse>({
@@ -157,6 +165,13 @@ export default function AnalysisPage() {
   const newsItems = newsPages.flatMap((page) => page.items);
   const newsWarning = newsPages.find((page) => page.warning)?.warning;
   const hasMoreNews = newsQuery.hasNextPage ?? false;
+
+  const {
+    data: marketSummary,
+    loading: isSummaryLoading,
+    error: summaryError,
+    refetch: refetchSummary,
+  } = useMarketSummary(cleanedSymbol);
 
   useEffect(() => {
     if (!signals) return;
@@ -413,71 +428,99 @@ export default function AnalysisPage() {
           {/* Row 3 */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <Card className="bg-trading-card border-gray-700">
-              <CardHeader>
+              <CardHeader className="flex flex-row items-center justify-between">
                 <CardTitle className="text-lg font-semibold text-white">
                   Market Analysis Summary
                 </CardTitle>
+                {marketSummary?.source === "fallback" && (
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <span className="text-[10px] uppercase tracking-wide text-amber-200/80 border border-amber-400/30 rounded-full px-2 py-0.5">
+                          Fallback summary
+                        </span>
+                      </TooltipTrigger>
+                      <TooltipContent className="bg-trading-card border border-gray-700 text-gray-200 text-xs">
+                        Using fallback analysis while live summary loads.
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                )}
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <h4 className="text-white font-medium mb-3">
-                      Bullish Factors
-                    </h4>
-                    <ul className="space-y-2 text-gray-300 text-sm">
-                      <li className="flex items-center">
-                        <TrendingUp className="h-4 w-4 text-trading-success mr-2" />
-                        MACD showing bullish crossover
-                      </li>
-                      <li className="flex items-center">
-                        <TrendingUp className="h-4 w-4 text-trading-success mr-2" />
-                        Price above 20-day EMA
-                      </li>
-                      <li className="flex items-center">
-                        <TrendingUp className="h-4 w-4 text-trading-success mr-2" />
-                        Strong volume confirmation
-                      </li>
-                      <li className="flex items-center">
-                        <TrendingUp className="h-4 w-4 text-trading-success mr-2" />
-                        Support holding at key levels
-                      </li>
-                    </ul>
+                {isSummaryLoading ? (
+                  <MarketSummarySkeleton />
+                ) : summaryError ? (
+                  <div className="flex items-center justify-between gap-4 rounded-md border border-rose-500/30 bg-rose-500/10 px-3 py-2 text-sm text-rose-200">
+                    <span>{summaryError}</span>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-7 px-2 text-rose-200 hover:text-rose-100"
+                      onClick={refetchSummary}
+                    >
+                      Retry
+                    </Button>
                   </div>
+                ) : marketSummary ? (
+                  <>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div>
+                        <h4 className="text-white font-medium mb-3">
+                          Bullish Factors
+                        </h4>
+                        {marketSummary.bullishFactors.length > 0 ? (
+                          <ul className="space-y-2 text-gray-300 text-sm">
+                            {marketSummary.bullishFactors.map((factor) => (
+                              <li key={factor} className="flex items-center">
+                                <TrendingUp className="h-4 w-4 text-trading-success mr-2" />
+                                {factor}
+                              </li>
+                            ))}
+                          </ul>
+                        ) : (
+                          <p className="text-xs text-gray-400">
+                            No bullish factors available yet.
+                          </p>
+                        )}
+                      </div>
 
-                  <div>
-                    <h4 className="text-white font-medium mb-3">Risk Factors</h4>
-                    <ul className="space-y-2 text-gray-300 text-sm">
-                      <li className="flex items-center">
-                        <TrendingDown className="h-4 w-4 text-trading-danger mr-2" />
-                        RSI approaching overbought zone
-                      </li>
-                      <li className="flex items-center">
-                        <TrendingDown className="h-4 w-4 text-trading-danger mr-2" />
-                        Resistance near recent highs
-                      </li>
-                      <li className="flex items-center">
-                        <TrendingDown className="h-4 w-4 text-trading-danger mr-2" />
-                        Global economic uncertainty
-                      </li>
-                      <li className="flex items-center">
-                        <TrendingDown className="h-4 w-4 text-trading-danger mr-2" />
-                        Fed policy changes ahead
-                      </li>
-                    </ul>
+                      <div>
+                        <h4 className="text-white font-medium mb-3">
+                          Risk Factors
+                        </h4>
+                        {marketSummary.riskFactors.length > 0 ? (
+                          <ul className="space-y-2 text-gray-300 text-sm">
+                            {marketSummary.riskFactors.map((factor) => (
+                              <li key={factor} className="flex items-center">
+                                <TrendingDown className="h-4 w-4 text-trading-danger mr-2" />
+                                {factor}
+                              </li>
+                            ))}
+                          </ul>
+                        ) : (
+                          <p className="text-xs text-gray-400">
+                            No risk factors available yet.
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                    <div className="mt-6 flex items-center gap-3">
+                      <Badge className={getBiasBadge(marketSummary.bias)}>
+                        {marketSummary.bias} bias
+                      </Badge>
+                      <span className="text-xs text-gray-400">
+                        {marketSummary.confidence != null
+                          ? `${Math.round(marketSummary.confidence)}% confidence`
+                          : "Awaiting confirmation"}
+                      </span>
+                    </div>
+                  </>
+                ) : (
+                  <div className="text-sm text-gray-400">
+                    No market summary available for this symbol.
                   </div>
-                </div>
-                <div className="mt-6 flex items-center gap-3">
-                  <Badge
-                    className={getBiasBadge(signals?.overall?.bias ?? "Neutral")}
-                  >
-                    {signals?.overall?.bias ?? "Neutral"} bias
-                  </Badge>
-                  <span className="text-xs text-gray-400">
-                    {signals?.overall?.confidence
-                      ? `${Math.round(signals.overall.confidence)}% confidence`
-                      : "Awaiting confirmation"}
-                  </span>
-                </div>
+                )}
               </CardContent>
             </Card>
 
@@ -487,11 +530,12 @@ export default function AnalysisPage() {
               isLoading={newsQuery.isLoading}
               isFetchingNextPage={newsQuery.isFetchingNextPage}
               hasMore={hasMoreNews}
-              onRefresh={() =>
+              onRefresh={() => {
                 queryClient.invalidateQueries({
                   queryKey: ["news", cleanedSymbol],
-                })
-              }
+                });
+                refetchSummary();
+              }}
               onLoadMore={() => {
                 if (newsQuery.hasNextPage && !newsQuery.isFetchingNextPage) {
                   newsQuery.fetchNextPage();
