@@ -19,13 +19,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 
 import Chart from "@/components/chart/stratigy-chart";
 import { TechnicalAnalysis } from "@/components/trading/technical-analysis";
@@ -45,14 +38,14 @@ import { TradeSuggestionPanel } from "@/components/analysis/TradeSuggestionPanel
 import { ChartInsightsOverlay } from "@/components/analysis/ChartInsightsOverlay";
 import { NewsPanel } from "@/components/analysis/NewsPanel";
 import { MarketSummarySkeleton } from "@/components/analysis/MarketSummarySkeleton";
+import {
+  MarketAnalysisSummaryCard,
+  type MarketAnalysisSummaryData,
+  type SummaryPill,
+} from "@/components/analysis/MarketAnalysisSummaryCard";
+import type { MarketSummary } from "@/hooks/useMarketSummary";
 
 const DEFAULT_TIMEFRAMES = ["15m", "1h", "4h", "1d", "1w"] as const;
-
-const getBiasBadge = (bias: string) => {
-  if (bias === "Bullish") return "bg-emerald-500/20 text-emerald-200";
-  if (bias === "Bearish") return "bg-rose-500/20 text-rose-200";
-  return "bg-slate-500/20 text-slate-200";
-};
 
 const getVolatilityLabel = (atr: number | null, price: number | null) => {
   if (atr == null || price == null) return "—";
@@ -70,6 +63,34 @@ const getAdxLabel = (value: number | null) => {
   if (value < 30) return "Building";
   if (value < 45) return "Strong";
   return "Very strong";
+};
+
+const mapMarketSummaryToAnalysisData = (
+  summary: MarketSummary
+): MarketAnalysisSummaryData => {
+  const extendedSummary = summary as MarketSummary & {
+    biasLabel?: string;
+    confidencePct?: number;
+    statePills?: SummaryPill[];
+    takeaway?: string;
+  };
+
+  return {
+    biasLabel: extendedSummary.biasLabel ?? `${summary.bias} Bias`,
+    confidencePct:
+      typeof extendedSummary.confidencePct === "number"
+        ? extendedSummary.confidencePct
+        : summary.confidence ?? 0,
+    bullishFactors: summary.bullishFactors ?? [],
+    riskFactors: summary.riskFactors ?? [],
+    statePills: Array.isArray(extendedSummary.statePills)
+      ? extendedSummary.statePills
+      : undefined,
+    takeaway:
+      typeof extendedSummary.takeaway === "string"
+        ? extendedSummary.takeaway
+        : undefined,
+  };
 };
 
 export default function AnalysisPage() {
@@ -428,26 +449,7 @@ export default function AnalysisPage() {
           {/* Row 3 */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <Card className="bg-trading-card border-gray-700">
-              <CardHeader className="flex flex-row items-center justify-between">
-                <CardTitle className="text-lg font-semibold text-white">
-                  Market Analysis Summary
-                </CardTitle>
-                {marketSummary?.source === "fallback" && (
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <span className="text-[10px] uppercase tracking-wide text-amber-200/80 border border-amber-400/30 rounded-full px-2 py-0.5">
-                          Fallback summary
-                        </span>
-                      </TooltipTrigger>
-                      <TooltipContent className="bg-trading-card border border-gray-700 text-gray-200 text-xs">
-                        Using fallback analysis while live summary loads.
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                )}
-              </CardHeader>
-              <CardContent>
+              <CardContent className="p-5">
                 {isSummaryLoading ? (
                   <MarketSummarySkeleton />
                 ) : summaryError ? (
@@ -463,59 +465,10 @@ export default function AnalysisPage() {
                     </Button>
                   </div>
                 ) : marketSummary ? (
-                  <>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div>
-                        <h4 className="text-white font-medium mb-3">
-                          Bullish Factors
-                        </h4>
-                        {marketSummary.bullishFactors.length > 0 ? (
-                          <ul className="space-y-2 text-gray-300 text-sm">
-                            {marketSummary.bullishFactors.map((factor) => (
-                              <li key={factor} className="flex items-center">
-                                <TrendingUp className="h-4 w-4 text-trading-success mr-2" />
-                                {factor}
-                              </li>
-                            ))}
-                          </ul>
-                        ) : (
-                          <p className="text-xs text-gray-400">
-                            No bullish factors available yet.
-                          </p>
-                        )}
-                      </div>
-
-                      <div>
-                        <h4 className="text-white font-medium mb-3">
-                          Risk Factors
-                        </h4>
-                        {marketSummary.riskFactors.length > 0 ? (
-                          <ul className="space-y-2 text-gray-300 text-sm">
-                            {marketSummary.riskFactors.map((factor) => (
-                              <li key={factor} className="flex items-center">
-                                <TrendingDown className="h-4 w-4 text-trading-danger mr-2" />
-                                {factor}
-                              </li>
-                            ))}
-                          </ul>
-                        ) : (
-                          <p className="text-xs text-gray-400">
-                            No risk factors available yet.
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                    <div className="mt-6 flex items-center gap-3">
-                      <Badge className={getBiasBadge(marketSummary.bias)}>
-                        {marketSummary.bias} bias
-                      </Badge>
-                      <span className="text-xs text-gray-400">
-                        {marketSummary.confidence != null
-                          ? `${Math.round(marketSummary.confidence)}% confidence`
-                          : "Awaiting confirmation"}
-                      </span>
-                    </div>
-                  </>
+                  <MarketAnalysisSummaryCard
+                    data={mapMarketSummaryToAnalysisData(marketSummary)}
+                    showFallbackBadge={marketSummary.source === "fallback"}
+                  />
                 ) : (
                   <div className="text-sm text-gray-400">
                     No market summary available for this symbol.
