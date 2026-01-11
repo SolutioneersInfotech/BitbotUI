@@ -38,6 +38,7 @@ import { TradeSuggestionPanel } from "@/components/analysis/TradeSuggestionPanel
 import { ChartInsightsOverlay } from "@/components/analysis/ChartInsightsOverlay";
 import { NewsPanel } from "@/components/analysis/NewsPanel";
 import { MarketSummarySkeleton } from "@/components/analysis/MarketSummarySkeleton";
+import { KeyLevelsCard } from "@/components/analysis/KeyLevelsCard";
 import {
   MarketAnalysisSummaryCard,
   type MarketAnalysisSummaryData,
@@ -346,13 +347,13 @@ export default function AnalysisPage() {
               />
               <TradeSuggestionPanel row={activeRow} className="h-full" />
             </div>
-            <div className="lg:col-span-3 flex flex-col">
+            <div className="lg:col-span-3 flex flex-col gap-4">
               <MultiTimeframeSignalMatrix
                 rows={signals?.timeframes}
                 activeTf={activeTf}
                 onSelectTf={setActiveTf}
-                className="h-full"
               />
+              <KeyLevelsCard symbol={cleanedSymbol} timeframe={activeTf || "1h"} />
             </div>
             <div className="lg:col-span-3 grid grid-cols-1 gap-4 lg:grid-rows-3 auto-rows-fr h-full">
               <Card className="bg-trading-card border-gray-700 h-full">
