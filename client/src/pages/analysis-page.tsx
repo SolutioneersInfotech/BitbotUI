@@ -448,8 +448,8 @@ export default function AnalysisPage() {
 
           {/* Row 3 */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <Card className="bg-trading-card border-gray-700 h-full">
-              <CardContent className="p-5 h-full">
+            <Card className="bg-trading-card border-gray-700 h-full flex flex-col">
+              <CardContent className="p-5 flex-1">
                 {isSummaryLoading ? (
                   <MarketSummarySkeleton />
                 ) : summaryError ? (

@@ -114,7 +114,7 @@ export function MarketAnalysisSummaryCard({
   const statePills = data.statePills?.filter((pill) => Boolean(pill?.label)) ?? [];
 
   return (
-    <div className="flex h-full flex-col gap-[clamp(0.75rem,0.6rem+0.6vw,1.25rem)]">
+    <div className="flex h-full min-h-0 flex-col gap-[clamp(0.75rem,0.6rem+0.6vw,1.25rem)]">
       <div className="flex flex-wrap items-start justify-between gap-[clamp(0.5rem,0.4rem+0.5vw,1rem)]">
         <div className="flex flex-wrap items-center gap-2">
           <h3 className="text-[clamp(0.9rem,0.8rem+0.5vw,1.1rem)] font-semibold text-white">
@@ -153,7 +153,7 @@ export function MarketAnalysisSummaryCard({
         </div>
       )}
 
-      <div className="flex flex-1 flex-col gap-[clamp(0.75rem,0.6rem+0.6vw,1.25rem)]">
+      <div className="flex min-h-0 flex-1 flex-col gap-[clamp(0.75rem,0.6rem+0.6vw,1.25rem)]">
         <FactorList
           title="Bullish"
           items={data.bullishFactors ?? []}
