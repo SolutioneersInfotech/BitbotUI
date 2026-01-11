@@ -154,16 +154,20 @@ export function MarketAnalysisSummaryCard({
       )}
 
       <div className="flex min-h-0 flex-1 flex-col gap-[clamp(0.75rem,0.6rem+0.6vw,1.25rem)]">
-        <FactorList
-          title="Bullish"
-          items={data.bullishFactors ?? []}
-          iconType="bullish"
-        />
-        <FactorList
-          title="Risk"
-          items={data.riskFactors ?? []}
-          iconType="risk"
-        />
+        <div className="mt-auto">
+          <FactorList
+            title="Bullish"
+            items={data.bullishFactors ?? []}
+            iconType="bullish"
+          />
+        </div>
+        <div className="mt-auto">
+          <FactorList
+            title="Risk"
+            items={data.riskFactors ?? []}
+            iconType="risk"
+          />
+        </div>
       </div>
 
       {data.takeaway && (
